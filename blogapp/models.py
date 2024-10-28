@@ -2,9 +2,13 @@ from django.db import models
 from django.utils import timezone
 from django.core.validators import RegexValidator, validate_email
 
+phone_regex = RegexValidator(
+    regex=r"^\d{10}", message="Phone number must be 10 digits only."
+)
 class UserData(models.Model):
     username = models.CharField(max_length=100,null=False,blank=False,unique=True)
     email = models.EmailField(max_length=100, null=False,blank=False,unique=True)
+    phone = models.CharField(max_length=10, blank=False,null=False, unique=True, validators=[phone_regex])
     password = models.CharField(max_length=15,null=False,blank=False)
     
     def __str__(self):
@@ -19,6 +23,9 @@ class OTPVerification(models.Model):
 
     def is_expired(self):
         return (timezone.now() - self.created_at).total_seconds() > 300
+    class Meta:
+        db_table = 'otp'
+        ordering = ['-created_at']
     
 class Posts(models.Model):
     title = models.CharField(max_length=40,null=False,blank=False)
