@@ -9,7 +9,7 @@ from django.contrib.auth.hashers import make_password, check_password
 class UserDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserData
-        fields = ['username', 'email','password']
+        fields = ['username', 'email', 'phone','password']
         extra_kwargs = {
             'password': {'write_only': True},
         }
@@ -24,10 +24,12 @@ class UserDataSerializer(serializers.ModelSerializer):
             except ValidationError:
                 raise serializers.ValidationError("Enter a valid email address.")
             return value
+        
         def validate_password(self, value):
             if len(value) < 4:
                 raise serializers.ValidationError("Password must be at least 4 characters long.")
             return value
+        
         def create(self, validated_data):
             validated_data['password'] = make_password(validated_data['password'])
             return super().create(validated_data)
@@ -53,14 +55,24 @@ class UserLoginSerializer(serializers.Serializer):
         return data
 
 class OTPRequestSerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email = serializers.EmailField(required=False)
+    phone = serializers.CharField(max_length=10, required=False)
+
+    def validate(self, data):
+        if not data.get('email') and not data.get('phone'):
+            raise serializers.ValidationError("Either email or phone number must be provided.")
+        return data
+
 
 class OTPVerifySerializer(serializers.Serializer):
-    email = serializers.EmailField()
+    email = serializers.EmailField(required=False)
+    phone = serializers.CharField(max_length=10, required=False)
     otp = serializers.CharField(max_length=6)
-    
-    
-    
+
+    def validate(self, data):
+        if not data.get('email') and not data.get('phone'):
+            raise serializers.ValidationError("Either email or phone number must be provided.")
+        return data  
     
 class PostViewSerializer(serializers.ModelSerializer):
     model = Posts

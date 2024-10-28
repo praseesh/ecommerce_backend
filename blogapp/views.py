@@ -4,13 +4,12 @@ from rest_framework.views import APIView
 from django.core.mail import send_mail
 from .models import OTPVerification, Posts
 from .serializers import PostViewSerializer, UserDataSerializer, OTPVerifySerializer
-from .auth import generate_otp
 from .models import UserData    
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from .utils import send_otp
+from .utils import send_otp, generate_otp
 
 class UserRegistrationViews(APIView):
     def post(self, request, *args, **kwargs):
