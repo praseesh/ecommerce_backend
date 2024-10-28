@@ -80,3 +80,14 @@ class PostView(APIView):
         serializer = PostViewSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+class SendOtp(APIView):
+    def post(self,request, *args, **kwargs):
+        data = request.data
+        if data.get('phone') is None:
+            return Response({'message': 'MOBILE No Required'},status=status.HTTP_404_NOT_FOUND,)
+        if data.get('password') is None:
+            return Response({'message':'Password Required'}, status=status.HTTP_404_NOT_FOUND)
+        user = UserData.objects.create(
+            phone = request.data.get('phone'),
+            otp = send_otp(data.get('phone'))
+        )

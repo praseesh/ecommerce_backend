@@ -19,13 +19,16 @@ class UserData(models.Model):
 class OTPVerification(models.Model):
     user = models.OneToOneField(UserData, on_delete=models.CASCADE)
     otp = models.CharField(max_length=6)
+    email = models.EmailField(null=True, blank=True)
+    phone_number = models.CharField(max_length=10, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def is_expired(self):
-        return (timezone.now() - self.created_at).total_seconds() > 300
+        return (timezone.now() - self.created_at).total_seconds() > 300 
     class Meta:
         db_table = 'otp'
         ordering = ['-created_at']
+
     
 class Posts(models.Model):
     title = models.CharField(max_length=40,null=False,blank=False)
