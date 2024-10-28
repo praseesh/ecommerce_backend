@@ -1,6 +1,7 @@
 import random
 import requests
 from django.conf import settings
+from django.core.mail import send_mail
 
 def generate_otp():
     """Generate a 6-digit OTP."""
@@ -17,4 +18,19 @@ def send_otp(mobile, otp):
             return None
     except Exception as e:
         print(f"Error sending OTP: {e}")
+        return None
+
+def send_mail_otp(email, otp):
+    """Send the generated OTP via email to the given email address."""
+    try:
+        send_mail(
+            'Your OTP Verification Code',
+            f'Your OTP code is {otp}. It is valid for 5 minutes.',
+            'prasee5264@gmail.com',  
+            [email],
+            fail_silently=False,
+        )
+        return otp
+    except Exception as e:
+        print(f"Error sending OTP via email: {e}")
         return None
