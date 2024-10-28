@@ -6,7 +6,7 @@ phone_regex = RegexValidator(
     regex=r"^\d{10}", message="Phone number must be 10 digits only."
 )
 class UserData(models.Model):
-    username = models.CharField(max_length=100,null=False,blank=False,unique=True)
+    username = models.CharField(max_length=100,null=False,blank=False)
     email = models.EmailField(max_length=100, null=False,blank=False,unique=True)
     phone = models.CharField(max_length=10, blank=False,null=False, unique=True, validators=[phone_regex])
     password = models.CharField(max_length=15,null=False,blank=False)

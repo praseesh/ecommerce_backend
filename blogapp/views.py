@@ -32,18 +32,6 @@ class UserRegistrationViews(APIView):
                 An OTP has been sent to your email \
                 and mobile number for verification.'},
                 status=status.HTTP_201_CREATED)
-            # send_mail(
-            #     'Your OTP Verification Code',
-            #     f'Your OTP code is {otp}. It is valid for 5 minutes.',
-            #     'your_email@example.com',
-            #     [user.email],
-            #     fail_silently=False,
-            # )
-            
-            # return Response(
-            #     {'message': 'User Registration Successful. An OTP has been sent to your email for verification.'},
-            #     status=status.HTTP_201_CREATED
-            # )
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
