@@ -35,7 +35,7 @@ class OTPVerification(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def is_expired(self):
-        return (timezone.now() - self.created_at).total_seconds() > 300 
+        return (timezone.now() - self.created_at).total_seconds() > 3600 
     class Meta:
         db_table = 'otp'
         ordering = ['-created_at']

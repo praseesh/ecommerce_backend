@@ -4,14 +4,14 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-from blogapp.tasks import send_welcome_email
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import OTPVerification, UserData,TemporaryUserRegistration
 from .serializers import OTPRequestSerializer, OTPVerifySerializer,UserDataSerializer, PostViewSerializer
-from .utils import send_otp,generate_otp,send_mail_otp
+from .utils import generate_otp, send_mail_otp
+from .tasks import send_mail_otp_task, send_sms_otp_task
 from django.contrib.auth.hashers import make_password
 
 class UserRegistrationViews(APIView):
@@ -32,13 +32,11 @@ class UserRegistrationViews(APIView):
             phone = request.data.get('phone')
             OTPVerification.objects.update_or_create(email=email, defaults={'otp': otp, 'phone_number': phone})
             if email:
-                send_mail_otp(email, otp)
+                send_mail_otp_task.delay(email, otp)
             # if phone:
-            #     send_otp(phone, otp)
+            #     send_sms_otp_task.delay(phone, otp)
             return Response(
-                {'message': 'User registration initiated.\
-                    An OTP has been sent to your email \
-                        and phone for verification.'},
+                {'message': 'User registration initiated. An OTP has been sent to your email and phone for verification.'},
                 status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -59,7 +57,7 @@ class VerifyOTPView(APIView):
                 
                 user_serializer = UserDataSerializer(data=user_data)
                 if user_serializer.is_valid():
-                    user = user_serializer.save(is_active=True)
+                    user = user_serializer.save()
                     temp_user.delete() 
                     return Response({'message': 'OTP verified and user created successfully'}, status=status.HTTP_200_OK)
                 return Response(user_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -82,26 +80,6 @@ class LoginView(APIView):
 
 class SendOtp(APIView):
     pass
-#     def post(self, request, *args, **kwargs):
-#         serializer = OTPRequestSerializer(data=request.data)
-#         if serializer.is_valid():
-#             data = serializer.validated_data
-#             user = None
-#             otp = generate_otp()
-#             if 'email' in data:
-#                 user = UserData.objects.filter(email=data['email']).first()
-#                 OTPVerification.objects.update_or_create(user=user, defaults={'otp': otp, 'email': data['email']})
-#                 send_mail_otp(data['email'], otp)
-#                 return Response({'message': 'OTP sent to the email address.'}, status=status.HTTP_200_OK)
-
-#             elif 'phone' in data:
-#                 user = UserData.objects.filter(phone=data['phone']).first()
-#                 OTPVerification.objects.update_or_create(user=user, defaults={'otp': otp, 'phone_number': data['phone']})
-#                 send_otp(data['phone'], otp)
-#                 return Response({'message': 'OTP sent to the mobile number.'}, status=status.HTTP_200_OK)
-
-#             return Response({'error': 'User does not exist.'}, status=status.HTTP_404_NOT_FOUND)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class PostView(APIView):
     authentication_classes = [JWTAuthentication]  
@@ -114,6 +92,3 @@ class PostView(APIView):
     
 
 
-def send_wel(request): 
-    send_welcome_email.delay("prameepramee0@gmail.com")
-    return HttpResponse("Welcome email has been sent!")
