@@ -22,8 +22,6 @@ def send_otp(mobile, otp):
 # def send_mail_otp(email, otp):
 #     """Send the generated OTP via email to the given email address."""
 #     try:
-#         print(f"++++:::::::{email,otp}::::::::::++++")
-        
 #         send_mail(
 #             'Your OTP Verification Code',
 #             f'Your OTP code is {otp}. It is valid for 5 minutes.',
@@ -31,8 +29,6 @@ def send_otp(mobile, otp):
 #             [email],
 #             fail_silently=False,
 #         )
-#         print(f"****:::::::{email,otp}::::::::::****")
-        
 #         return otp
 #     except Exception as e:
 #         print(f"Error sending OTP via email: {e}")
