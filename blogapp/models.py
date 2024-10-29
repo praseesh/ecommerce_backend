@@ -28,8 +28,7 @@ class OTPVerification(models.Model):
     class Meta:
         db_table = 'otp'
         ordering = ['-created_at']
-
-    
+        
 class Posts(models.Model):
     title = models.CharField(max_length=40,null=False,blank=False)
     content = models.TextField(max_length=1000, null=False,blank=False)
