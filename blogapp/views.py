@@ -4,7 +4,8 @@ from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-
+from blogapp.tasks import send_welcome_email
+from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -91,16 +92,18 @@ class SendOtp(APIView):
             if 'email' in data:
                 user = UserData.objects.filter(email=data['email']).first()
                 OTPVerification.objects.update_or_create(user=user, defaults={'otp': otp, 'email': data['email']})
-                # Send OTP via email
                 send_mail_otp(data['email'], otp)
                 return Response({'message': 'OTP sent to the email address.'}, status=status.HTTP_200_OK)
 
             elif 'phone' in data:
                 user = UserData.objects.filter(phone=data['phone']).first()
                 OTPVerification.objects.update_or_create(user=user, defaults={'otp': otp, 'phone_number': data['phone']})
-                # Send OTP via SMS
                 send_otp(data['phone'], otp)
                 return Response({'message': 'OTP sent to the mobile number.'}, status=status.HTTP_200_OK)
 
             return Response({'error': 'User does not exist.'}, status=status.HTTP_404_NOT_FOUND)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+def send_wel(request): 
+    send_welcome_email.delay("prameepramee0@gmail.com")
+    return HttpResponse("Welcome email has been sent!")

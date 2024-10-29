@@ -24,9 +24,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
-
-
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -37,6 +34,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'blogapp',
     'rest_framework_simplejwt',
+    'django_celery_results',  
+    'django_celery_beat',
 ]
 
 MIDDLEWARE = [
@@ -107,6 +106,12 @@ DATABASES = {
         
     }
 }
+
+CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'  
+CELERY_RESULT_BACKEND = 'rpc://'
+
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
 
 
 # Password validation
