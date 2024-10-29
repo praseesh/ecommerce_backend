@@ -13,26 +13,25 @@ class UserDataSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'password': {'write_only': True},
         }
-        def validate_username(self, value):
-            if len(value) < 4:
-                raise serializers.ValidationError("Username must be at least 4 characters long.")
-            return value
-
-        def validate_email(self, value):
-            try:
-                validate_email(value)
-            except ValidationError:
-                raise serializers.ValidationError("Enter a valid email address.")
-            return value
-        
-        def validate_password(self, value):
-            if len(value) < 4:
-                raise serializers.ValidationError("Password must be at least 4 characters long.")
-            return value
-        
-        def create(self, validated_data):
-            validated_data['password'] = make_password(validated_data['password'])
-            return super().create(validated_data)
+    def validate_username(self, value):
+        if len(value) < 4:
+            raise serializers.ValidationError("Username must be at least 4 characters long.")
+        return value
+    def validate_email(self, value):
+        try:
+            validate_email(value)
+        except ValidationError:
+            raise serializers.ValidationError("Enter a valid email address.")
+        return value
+    
+    def validate_password(self, value):
+        if len(value) < 4:
+            raise serializers.ValidationError("Password must be at least 4 characters long.")
+        return value
+    
+    def create(self, validated_data):
+        validated_data['password'] = make_password(validated_data['password'])
+        return super().create(validated_data)
         
 class UserLoginSerializer(serializers.Serializer):
     username = serializers.CharField(required=True)

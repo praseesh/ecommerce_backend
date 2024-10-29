@@ -9,15 +9,26 @@ class UserData(models.Model):
     username = models.CharField(max_length=100,null=False,blank=False)
     email = models.EmailField(max_length=100, null=False,blank=False,unique=True)
     phone = models.CharField(max_length=10, blank=False,null=False, unique=True, validators=[phone_regex])
-    password = models.CharField(max_length=15,null=False,blank=False)
+    password = models.CharField(max_length=128,null=False,blank=False)
     
     def __str__(self):
         return self.username
     class Meta:
         db_table = 'userdata'
+        
+class TemporaryUserRegistration(models.Model):
+    username = models.CharField(max_length=150)
+    email = models.EmailField(unique=True)
+    phone = models.CharField(max_length=15)
+    password = models.CharField(max_length=128)  
+    otp = models.CharField(max_length=6)
+    created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = 'tempuser'
+    
     
 class OTPVerification(models.Model):
-    user = models.OneToOneField(UserData, on_delete=models.CASCADE)
+    user = models.OneToOneField(UserData, on_delete=models.CASCADE, null=True, blank=True)
     otp = models.CharField(max_length=6)
     email = models.EmailField(null=True, blank=True)
     phone_number = models.CharField(max_length=10, null=True, blank=True)
