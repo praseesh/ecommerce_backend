@@ -1,7 +1,9 @@
 import random
 import requests
 from django.conf import settings
-from django.core.mail import send_mail
+from django.core.mail import send_mail, EmailMessage
+from email.mime.text import MIMEText
+from django.conf import settings
 
 def generate_otp():
     """Generate a 6-digit OTP."""
@@ -33,10 +35,6 @@ def send_otp(mobile, otp):
 #     except Exception as e:
 #         print(f"Error sending OTP via email: {e}")
 #         return None
-
-from django.core.mail import send_mail, EmailMessage
-from email.mime.text import MIMEText
-from django.conf import settings
 
 def send_mail_otp(email, otp):
     try:
