@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import OTPVerification, UserData,TemporaryUserRegistration
-from .serializers import OTPRequestSerializer, OTPVerifySerializer,UserDataSerializer, PostViewSerializer
+from .serializers import OTPRequestSerializer, OTPVerifySerializer,UserDataSerializer, PostViewSerializer, UserLoginSerializer
 from .utils import generate_otp, send_mail_otp
 from .tasks import send_mail_otp_task, send_sms_otp_task
 from django.contrib.auth.hashers import make_password
@@ -24,7 +24,7 @@ class UserRegistrationViews(APIView):
                 defaults={
                     'username': request.data['username'],
                     'phone': request.data['phone'],
-                    'password': make_password(request.data['password']),
+                    'password': request.data['password'],
                     'otp': otp,
                 })
             email = request.data.get('email')
@@ -40,7 +40,7 @@ class UserRegistrationViews(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-class VerifyOTPView(APIView): # 9495346612
+class VerifyOTPView(APIView): 
     def post(self, request, *args, **kwargs):
         serializer = OTPVerifySerializer(data=request.data)
         if serializer.is_valid():
@@ -65,17 +65,16 @@ class VerifyOTPView(APIView): # 9495346612
     
 class LoginView(APIView):
     def post(self, request, *args, **kwargs):
-        email = request.data.get('email')
-        password = request.data.get('password')
-        user = authenticate(email=email, password=password)
-        if user is not None:
-            refresh = RefreshToken.for_user(user)
-            return Response({
+        serializer = UserLoginSerializer(data=request.data)
+        if serializer.is_valid():
+            user = serializer.validated_data['user']
+            refresh = RefreshToken.for_user(user)  
+            return Response({'message':'Login Successfully',
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             }, status=status.HTTP_200_OK)
         else:
-            return Response({'error': 'Invalid email or password'}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class SendOtp(APIView):
     pass

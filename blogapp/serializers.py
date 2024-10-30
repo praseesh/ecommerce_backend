@@ -34,22 +34,21 @@ class UserDataSerializer(serializers.ModelSerializer):
         return super().create(validated_data)
         
 class UserLoginSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True)
+    email = serializers.CharField(required=True)
     password = serializers.CharField(required=True)
 
     def validate(self, data):
-        username = data.get('username')
+        email = data.get('email')
         password = data.get('password')
-
-        if not username or not password:
+        if not email or not password:
             raise serializers.ValidationError("Must include both username and password.")
-
         try:
-            user = UserData.objects.get(username=username)
+            user = UserData.objects.get(email=email)
         except UserData.DoesNotExist:
-            raise serializers.ValidationError("User with this username does not exist.")
-        
-        
+            raise serializers.ValidationError("User with this Email does not exist.")
+        if not check_password(password, user.password):
+            print(f":::::    {password}:::::::   {user.password}")
+            raise serializers.ValidationError("Incorrect password.")
         data['user'] = user
         return data
 
