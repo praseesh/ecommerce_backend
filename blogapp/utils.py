@@ -29,7 +29,7 @@ def send_mail_otp(email, otp):
                 <h2 style="color: #0066cc;">Your One-Time Password (OTP)</h2>
                 <p>Hello,</p>
                 <p>Your OTP for secure access is:</p>
-                <p style="font-size: 24px; font-weight: bold; color: #0066cc;">{otp}</p>
+                <p style="font-size: 30px; font-weight: bold; color: #0066cc;">{otp}</p>
                 <p>This code is valid for <strong>5 minutes</strong>.</p>
                 <p>If you did not request this, please ignore this email.</p>
                 <hr>
@@ -52,10 +52,8 @@ def send_mail_otp(email, otp):
             to=[recipient_email],
         )
         email_message.content_subtype = "html"  
-
         email_message.send(fail_silently=False)
         return otp
-
     except Exception as e:
         print(f"Error sending OTP via email: {e}")
         return None

@@ -26,8 +26,7 @@ class UserRegistrationViews(APIView):
                     'phone': request.data['phone'],
                     'password': make_password(request.data['password']),
                     'otp': otp,
-                }
-            )
+                })
             email = request.data.get('email')
             phone = request.data.get('phone')
             OTPVerification.objects.update_or_create(email=email, defaults={'otp': otp, 'phone_number': phone})
@@ -41,7 +40,7 @@ class UserRegistrationViews(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         
-class VerifyOTPView(APIView):
+class VerifyOTPView(APIView): # 9495346612
     def post(self, request, *args, **kwargs):
         serializer = OTPVerifySerializer(data=request.data)
         if serializer.is_valid():

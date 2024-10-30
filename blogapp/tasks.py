@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 @shared_task
 def send_mail_otp_task(email, otp):
-    logger.info(f"$$$$:::::::{email,otp}::::::::::$$$$")
     return send_mail_otp(email, otp)  
 
 @shared_task
