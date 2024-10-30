@@ -70,8 +70,8 @@ class LoginView(APIView):
             user = serializer.validated_data['user']
             refresh = RefreshToken.for_user(user)  
             return Response({'message':'Login Successfully',
-                'refresh': str(refresh),
                 'access': str(refresh.access_token),
+                'refresh': str(refresh),
             }, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -82,8 +82,8 @@ class SendOtp(APIView):
 class PostView(APIView):
     authentication_classes = [JWTAuthentication]  
     permission_classes = [IsAuthenticated]
-
     def get(self, request, *args, **kwargs):
+        print(request.headers.get('Authorization'))
         posts = Posts.objects.all()
         serializer = PostViewSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
