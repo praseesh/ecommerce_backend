@@ -5,8 +5,6 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SMS_API_KEY = config("SMS_API_KEY")
-
 SECRET_KEY = 'django-insecure-nwcdr#3n-336qw&z9x10v5(a%ec!5zu4&frs&fp2tgpsvzs9bl'
 
 DEBUG = True
@@ -60,26 +58,32 @@ WSGI_APPLICATION = 'blogplatform.wsgi.application'
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
 }
+
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     
-    'ROTATE_REFRESH_TOKENS': True,
-    'BLACKLIST_AFTER_ROTATION': True,
-    'UPDATE_LAST_LOGIN': False,
-    'ALGORITHM': 'HS256',
-    'AUTH_HEADER_TYPES': ('Bearer',),
-    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
-    'USER_ID_FIELD': 'id',
-    'USER_ID_CLAIM': 'user_id',
-    'JTI_CLAIM': 'jti',
-    'TOKEN_TYPE_CLAIM': 'token_type',
-    'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
-    'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
-    'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
-    'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
-}
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=30),
+  }
+
+# SIMPLE_JWT = {
+#     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=15),  
+#     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),     
+#     'ROTATE_REFRESH_TOKENS': True,
+#     'BLACKLIST_AFTER_ROTATION': True,
+#     'UPDATE_LAST_LOGIN': False,
+#     'ALGORITHM': 'HS256',
+#     'AUTH_HEADER_TYPES': ('Bearer',),
+#     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+#     'USER_ID_FIELD': 'id',
+#     'USER_ID_CLAIM': 'user_id',
+#     'JTI_CLAIM': 'jti',
+#     'TOKEN_TYPE_CLAIM': 'token_type',
+#     'AUTH_TOKEN_CLASSES': ('rest_framework_simplejwt.tokens.AccessToken',),
+#     'SLIDING_TOKEN_REFRESH_EXP_CLAIM': 'refresh_exp',
+#     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
+#     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
+# }
 
 DATABASES = {
     'default': {
@@ -126,6 +130,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+SMS_API_KEY = config("SMS_API_KEY")
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
