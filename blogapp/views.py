@@ -79,11 +79,20 @@ class LoginView(APIView):
 class SendOtp(APIView):
     pass
 
+# class PostView(APIView):
+#     authentication_classes = [JWTAuthentication]  
+#     permission_classes = [IsAuthenticated]
+#     def get(self, request, *args, **kwargs):
+#         print(request.headers.get('Authorization'))
+#         posts = Posts.objects.all()
+#         serializer = PostViewSerializer(posts, many=True)
+#         return Response(serializer.data, status=status.HTTP_200_OK)
+    
 class PostView(APIView):
     authentication_classes = [JWTAuthentication]  
     permission_classes = [IsAuthenticated]
+
     def get(self, request, *args, **kwargs):
-        print(request.headers.get('Authorization'))
         posts = Posts.objects.all()
         serializer = PostViewSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

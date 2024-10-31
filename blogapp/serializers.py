@@ -75,5 +75,5 @@ class OTPVerifySerializer(serializers.Serializer):
 class PostViewSerializer(serializers.ModelSerializer):
     class Meta:
         model = Posts
-        fields = ['id', 'title', 'content', 'author', 'created_at', 'updated_at']
+        fields = '__all__'
         

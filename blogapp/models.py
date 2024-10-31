@@ -1,18 +1,45 @@
 from django.db import models
 from django.utils import timezone
 from django.core.validators import RegexValidator, validate_email
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 phone_regex = RegexValidator(
     regex=r"^\d{10}", message="Phone number must be 10 digits only."
 )
-class UserData(models.Model):
-    username = models.CharField(max_length=100,null=False,blank=False)
-    email = models.EmailField(max_length=100, null=False,blank=False,unique=True)
-    phone = models.CharField(max_length=10, blank=False,null=False, unique=True, validators=[phone_regex])
-    password = models.CharField(max_length=128,null=False,blank=False)
-    
+
+class UserDataManager(BaseUserManager):
+    def create_user(self, email, username, phone, password=None):
+        if not email:
+            raise ValueError("Users must have an email address")
+        user = self.model(email=self.normalize_email(email), username=username, phone=phone)
+        user.set_password(password)
+        user.save(using=self._db)
+        return user
+
+    def create_superuser(self, email, username, phone, password=None):
+        user = self.create_user(email, username, phone, password)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save(using=self._db)
+        return user
+
+class UserData(AbstractBaseUser):
+    username = models.CharField(max_length=100, unique=True)
+    email = models.EmailField(max_length=100, unique=True)
+    phone = models.CharField(max_length=10, unique=True, validators=[phone_regex])
+    password = models.CharField(max_length=128)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    is_superuser = models.BooleanField(default=False)
+
+    USERNAME_FIELD = 'email'   
+    REQUIRED_FIELDS = ['username', 'phone']   
+
+    objects = UserDataManager()  
+
     def __str__(self):
         return self.username
+
     class Meta:
         db_table = 'userdata'
         
