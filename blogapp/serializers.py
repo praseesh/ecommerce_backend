@@ -77,3 +77,8 @@ class PostViewSerializer(serializers.ModelSerializer):
         model = Posts
         fields = '__all__'
         
+class UserViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserData
+        fields = '__all__'
+        

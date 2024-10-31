@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import OTPVerification, UserData,TemporaryUserRegistration
-from .serializers import OTPRequestSerializer, OTPVerifySerializer,UserDataSerializer, PostViewSerializer, UserLoginSerializer
+from .serializers import OTPRequestSerializer, OTPVerifySerializer,UserDataSerializer, PostViewSerializer, UserLoginSerializer, UserViewSerializer
 from .utils import generate_otp, send_mail_otp
 from .tasks import send_mail_otp_task, send_sms_otp_task
 from django.contrib.auth.hashers import make_password
@@ -76,26 +76,19 @@ class LoginView(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class SendOtp(APIView):
-    pass
 
-# class PostView(APIView):
-#     authentication_classes = [JWTAuthentication]  
-#     permission_classes = [IsAuthenticated]
-#     def get(self, request, *args, **kwargs):
-#         print(request.headers.get('Authorization'))
-#         posts = Posts.objects.all()
-#         serializer = PostViewSerializer(posts, many=True)
-#         return Response(serializer.data, status=status.HTTP_200_OK)
-    
-class PostView(APIView):
+class UserListView(APIView):
     authentication_classes = [JWTAuthentication]  
     permission_classes = [IsAuthenticated]
 
     def get(self, request, *args, **kwargs):
-        posts = Posts.objects.all()
-        serializer = PostViewSerializer(posts, many=True)
+        users = UserData.objects.all()
+        serializer = UserViewSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
+class EditProfileView(APIView):
+    # authentication_classes = [JWTAuthentication]  
+    # permission_classes = [IsAuthenticated]
+    pass
 
 
