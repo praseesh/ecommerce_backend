@@ -26,7 +26,10 @@ class UserDataManager(BaseUserManager):
 class UserData(AbstractBaseUser):
     firstname = models.CharField(max_length=30, null=True, blank=True)
     lastname = models.CharField(max_length=30, null=True, blank=True)
-    profile_photo = models.ImageField()
+    profile_photo = models.ImageField(upload_to='profile_picture',blank=True,null=True)
+    age = models.IntegerField(null=True,blank=True)
+    gender = models.CharField(max_length=10,blank=True,null=True)
+    city = models.CharField(max_length=255,blank=True,null=True)
     username = models.CharField(max_length=100, unique=True)
     email = models.EmailField(max_length=100, unique=True)
     phone = models.CharField(max_length=10, unique=True, validators=[phone_regex])
