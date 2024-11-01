@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.core.validators import RegexValidator, validate_email
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager,PermissionsMixin
 
 phone_regex = RegexValidator(
     regex=r"^\d{10}", message="Phone number must be 10 digits only."
@@ -23,10 +23,10 @@ class UserDataManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-class UserData(AbstractBaseUser):
+class UserData(AbstractBaseUser,PermissionsMixin):
     firstname = models.CharField(max_length=30, null=True, blank=True)
     lastname = models.CharField(max_length=30, null=True, blank=True)
-    profile_photo = models.ImageField(upload_to='profile_picture',blank=True,null=True)
+    profile_photo = models.ImageField(upload_to='images/',blank=True,null=True)
     age = models.IntegerField(null=True,blank=True)
     gender = models.CharField(max_length=10,blank=True,null=True)
     city = models.CharField(max_length=255,blank=True,null=True)

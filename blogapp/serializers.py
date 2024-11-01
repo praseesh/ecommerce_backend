@@ -87,6 +87,18 @@ class UserProfileSerializer(serializers.ModelSerializer):
         model = UserData
         fields = ['firstname', 'lastname', 'username', 'phone', 'email', 'gender', 'age', 'city', 'profile_photo' ]
     
+    def validate_firstname(self, value):
+        if not value.isalpha():
+            raise serializers.ValidationError("First name should contain only alphabetic characters.")
+        return value.capitalize()  
+
+    def validate_lastname(self, value):
+        if value:
+            if not value.isalpha():
+                raise serializers.ValidationError("Last name should contain only alphabetic characters.")
+            return value.capitalize()  
+        return value
+    
     def validate_age(self, value):
         if value is not None and (value < 18 or value > 100):
             raise serializers.ValidationError("Age must be between 18 and 100.")
