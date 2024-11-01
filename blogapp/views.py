@@ -91,7 +91,7 @@ class EditProfileView(APIView):
     # permission_classes = [IsAuthenticated]
     pass
 
-class UserDetailView(APIView):
+class UserProfileView(APIView):
     authentication_classes = [JWTAuthentication]  
     permission_classes = [IsAuthenticated]
 
@@ -100,5 +100,14 @@ class UserDetailView(APIView):
         serializer = UserProfileSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class CreateProfileView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes     = [IsAuthenticated]
 
-
+    def patch(self,request,*args, **kwargs):
+        user = request.user
+        serializer = UserProfileSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
