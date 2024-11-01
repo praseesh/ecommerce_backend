@@ -1,0 +1,166 @@
+{
+    "intents": [
+        {
+            "tag": "greeting",
+            "patterns": [
+                "Hi",
+                "Hey",
+                "How are you",
+                "Is anyone there?",
+                "Hello",
+                "Good day",
+                "What's up",
+                "Howdy",
+                "Greetings",
+                "Hey there",
+                "Hello, is anyone available?"
+            ],
+            "responses": [
+                "Hey :-)",
+                "Hello, thanks for visiting",
+                "Hi there, what can I do for you?",
+                "Hi there, how can I help?"
+            ]
+        },
+        {
+            "tag": "goodbye",
+            "patterns": [
+                "Bye",
+                "See you later",
+                "Goodbye",
+                "Take care",
+                "Catch you later",
+                "See ya",
+                "I'm leaving",
+                "Have a good day",
+                "Farewell",
+                "See you next time"
+            ],
+            "responses": [
+                "See you later, thanks for visiting",
+                "Have a nice day",
+                "Bye! Come back again soon.",
+                "Take care! Looking forward to seeing you again."
+            ]
+        },
+        {
+            "tag": "thanks",
+            "patterns": [
+                "Thanks",
+                "Thank you",
+                "That's helpful",
+                "Awesome, thanks!",
+                "Thanks a lot",
+                "I appreciate it",
+                "Thanks for your help",
+                "Much appreciated",
+                "Thank you so much",
+                "I'm grateful"
+            ],
+            "responses": [
+                "Happy to help!",
+                "Anytime! Feel free to ask if you have more questions.",
+                "You're welcome!",
+                "Glad I could assist."
+            ]
+        },
+        {
+            "tag": "hours",
+            "patterns": [
+                "What are your hours?",
+                "When are you open?",
+                "When do you close?",
+                "Operating hours?",
+                "Can I visit you now?",
+                "Are you open today?",
+                "What time do you open and close?",
+                "Tell me your working hours",
+                "Are you available 24/7?"
+            ],
+            "responses": [
+                "We're open from 9am to 9pm every day.",
+                "Our hours are 9am to 9pm daily.",
+                "We're here to help from 9am to 9pm.",
+                "You can visit us between 9am and 9pm."
+            ]
+        },
+        {
+            "tag": "payments",
+            "patterns": [
+                "Do you accept credit cards?",
+                "Can I pay with cash?",
+                "Are there any payment options?",
+                "Do you take online payments?",
+                "What are the payment methods?",
+                "Can I pay by card?",
+                "Is digital payment accepted?",
+                "Can I pay using my mobile wallet?"
+            ],
+            "responses": [
+                "Yes, we accept all major credit cards, cash, and mobile payments.",
+                "We support payments through cash, card, and digital wallets.",
+                "Our accepted payment methods include credit cards, debit cards, and digital payments.",
+                "You can pay using cash, card, or through online payment options."
+            ]
+        },
+        {
+            "tag": "shipping",
+            "patterns": [
+                "How long does shipping take?",
+                "What is the shipping time?",
+                "When will my order arrive?",
+                "How soon can I get my package?",
+                "What's the expected delivery time?",
+                "Is there express shipping?",
+                "Can you deliver in one day?",
+                "Tell me the delivery options",
+                "Do you ship internationally?"
+            ],
+            "responses": [
+                "Shipping typically takes 3-5 business days.",
+                "Delivery time varies based on location but usually takes 3-5 business days.",
+                "Express shipping options are available for faster delivery.",
+                "International shipping may take longer, depending on the destination."
+            ]
+        },
+        {
+            "tag": "contact",
+            "patterns": [
+                "How can I contact you?",
+                "What's your phone number?",
+                "Where are you located?",
+                "Can I get your email?",
+                "I want to reach out to you",
+                "Provide me with your contact information",
+                "How do I get in touch?",
+                "Do you have a contact number?",
+                "Can I have your address?"
+            ],
+            "responses": [
+                "You can contact us via phone at (123) 456-7890 or email us at support@example.com.",
+                "We're located at 1234 Elm Street, Anytown. Feel free to call or visit!",
+                "Reach out to us at (123) 456-7890 or support@example.com.",
+                "Our contact number is (123) 456-7890. Email us at support@example.com if you prefer."
+            ]
+        },
+        {
+            "tag": "services",
+            "patterns": [
+                "What services do you offer?",
+                "Tell me about your services",
+                "Can you provide details on your offerings?",
+                "Do you offer any special services?",
+                "What can you help me with?",
+                "List your services",
+                "Describe your services",
+                "What solutions do you offer?"
+            ],
+            "responses": [
+                "We offer a wide range of services including web development, mobile app development, and digital marketing.",
+                "Our main services are web development, SEO, and custom software solutions.",
+                "We specialize in web and mobile app development along with e-commerce solutions.",
+                "Our services include custom software development, web and mobile applications, and IT consulting."
+            ]
+        }
+    ]
+}
