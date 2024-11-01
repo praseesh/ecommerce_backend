@@ -13,6 +13,7 @@ from .serializers import OTPRequestSerializer, OTPVerifySerializer,UserDataSeria
 from .utils import generate_otp, send_mail_otp
 from .tasks import send_mail_otp_task, send_sms_otp_task
 from django.contrib.auth.hashers import make_password
+from rest_framework.parsers import MultiPartParser
 
 class UserRegistrationViews(APIView):
     def post(self, request, *args, **kwargs):
@@ -32,8 +33,8 @@ class UserRegistrationViews(APIView):
             OTPVerification.objects.update_or_create(email=email, defaults={'otp': otp, 'phone_number': phone})
             if email:
                 send_mail_otp_task.delay(email, otp)
-            # if phone:
-            #     send_sms_otp_task.delay(phone, otp)
+            if phone:
+                send_sms_otp_task.delay(phone, otp)
             return Response(
                 {'message': 'User registration initiated. An OTP has been sent to your email and phone for verification.'},
                 status=status.HTTP_201_CREATED)
@@ -91,7 +92,7 @@ class EditProfileView(APIView):
     # permission_classes = [IsAuthenticated]
     pass
 
-class UserDetailView(APIView):
+class UserProfileView(APIView):
     authentication_classes = [JWTAuthentication]  
     permission_classes = [IsAuthenticated]
 
@@ -100,5 +101,15 @@ class UserDetailView(APIView):
         serializer = UserProfileSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+class CreateProfileView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser]  # Enable handling of file uploads
 
-
+    def patch(self, request, *args, **kwargs):
+        user = request.user
+        serializer = UserProfileSerializer(user, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
