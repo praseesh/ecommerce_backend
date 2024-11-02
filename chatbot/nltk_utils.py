@@ -26,20 +26,7 @@ sentence = ["hello", "how", "are", "you"]
 words = ["hi", "hello", "I", "you","are", "bye", "thank", "cool"]
 bag = bag_of_words(sentence, words)
 
-class ChatDataset(Dataset):
-    def __init__(self,x_train,y_train):
-        self.n_samples = len(x_train)
-        self.x_data = x_train
-        self.y_data = y_train
-        
-    def __getitem__(self, idx):
-        return self.x_data[idx], self.y_data[idx]
-    
-    def __len__(self):
-        return self.n_samples
-batch_size = 8
-dataset = ChatDataset()
-train_loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=2)
+
 word = ['organize', 'organizing', 'organizes', 'organizes' ]
 stemmed_words = [stem(w) for w in word]
 # print(stemmed_words)
