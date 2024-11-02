@@ -50,30 +50,38 @@ class ChatDataset(Dataset):
     
     def __len__(self):
         return self.n_samples
-batch_size = 8
-hidden_size= 8
-output_size = len(tags)
-input_size = len(x_train[0])
-learning_rate = 0.001
-num_epochs = 1000
-# print(f"input:{input_size}, allwords:{len(all_words)}, output: {output_size}")
+if __name__ == '__main__':
+    batch_size = 8
+    hidden_size = 8
+    output_size = len(tags)
+    input_size = len(x_train[0])
+    learning_rate = 0.001
+    num_epochs = 1000
 
-dataset = ChatDataset()
-train_loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=2)
-device = torch.device('cude' if torch.cuda.is_available()else 'cpu')
-model = NeuralNet(input_size, hidden_size, output_size).to(device)
+    dataset = ChatDataset()
+    train_loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=0)  # Set num_workers=0
 
-criterion = nn.CrossEntropyLoss()
-optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    model = NeuralNet(input_size, hidden_size, output_size).to(device)
 
-for epoch in range(num_epochs):
-    for (words, labels) in train_loader:
-        words = words.to(device)
-        labels = labels.to(device)
+    criterion = nn.CrossEntropyLoss()
+    optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
+    for epoch in range(num_epochs):
+        for (words, labels) in train_loader:
+            words = words.to(device)
+            labels = labels.to(device)
+            
+            # Forward pass
+            outputs = model(words)
+            loss = criterion(outputs, labels)
+            
+            # Backward pass and optimization
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
         
-        outputs = model(words)
-        loss= criterion(outputs, labels)
-        
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
+        if (epoch + 1) % 100 == 0:
+            print(f'epoch {epoch + 1}/{num_epochs}, loss= {loss.item():.4f}')
+            
+    print(f'final loss= {loss.item():.4f}')
