@@ -71,8 +71,7 @@ if __name__ == '__main__':
         for (words, labels) in train_loader:
             words = words.to(device)
             labels = labels.to(device)
-            
-            # Forward pass
+
             outputs = model(words)
             loss = criterion(outputs, labels)
             
