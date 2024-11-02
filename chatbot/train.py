@@ -76,7 +76,6 @@ if __name__ == '__main__':
             outputs = model(words)
             loss = criterion(outputs, labels)
             
-            # Backward pass and optimization
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
