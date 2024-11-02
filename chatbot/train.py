@@ -1,8 +1,10 @@
 import json
+import torch.nn as nn
+import torch
 from nltk_utils import tokenize, stem, bag_of_words
 import numpy as np
 from torch.utils.data import Dataset, DataLoader
-
+from model import NeuralNet
 
 with open('P:\\Kannur\\blogplatform\\chatbot\\intents.json', 'r')as f:
     intents = json.load(f)
@@ -22,9 +24,9 @@ with open('P:\\Kannur\\blogplatform\\chatbot\\intents.json', 'r')as f:
     all_words = [stem(w) for w in all_words if w not in ignore_words]
     all_words = sorted(set(all_words))
     tags = sorted(set(tags))
-    print(all_words)
-    print("::::::::::::::::::")
-    print(tags)
+    # print(all_words)
+    # print("::::::::::::::::::")
+    # print(tags)
     
 x_train = []
 y_train = []
@@ -49,5 +51,29 @@ class ChatDataset(Dataset):
     def __len__(self):
         return self.n_samples
 batch_size = 8
+hidden_size= 8
+output_size = len(tags)
+input_size = len(x_train[0])
+learning_rate = 0.001
+num_epochs = 1000
+# print(f"input:{input_size}, allwords:{len(all_words)}, output: {output_size}")
+
 dataset = ChatDataset()
 train_loader = DataLoader(dataset=dataset, batch_size=batch_size, shuffle=True, num_workers=2)
+device = torch.device('cude' if torch.cuda.is_available()else 'cpu')
+model = NeuralNet(input_size, hidden_size, output_size).to(device)
+
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
+for epoch in range(num_epochs):
+    for (words, labels) in train_loader:
+        words = words.to(device)
+        labels = labels.to(device)
+        
+        outputs = model(words)
+        loss= criterion(outputs, labels)
+        
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
