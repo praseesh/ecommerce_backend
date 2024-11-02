@@ -26,10 +26,9 @@ sentence = ["hello", "how", "are", "you"]
 words = ["hi", "hello", "I", "you","are", "bye", "thank", "cool"]
 bag = bag_of_words(sentence, words)
 
-
 word = ['organize', 'organizing', 'organizes', 'organizes' ]
 stemmed_words = [stem(w) for w in word]
-# print(stemmed_words)
+
 
 # a = "How aren't long does shipping take?"
 # print(a)
