@@ -2,165 +2,118 @@
     "intents": [
         {
             "tag": "greeting",
-            "patterns": [
-                "Hi",
-                "Hey",
-                "How are you",
-                "Is anyone there?",
-                "Hello",
-                "Good day",
-                "What's up",
-                "Howdy",
-                "Greetings",
-                "Hey there",
-                "Hello, is anyone available?"
-            ],
-            "responses": [
-                "Hey :-)",
-                "Hello, thanks for visiting",
-                "Hi there, what can I do for you?",
-                "Hi there, how can I help?"
-            ]
+            "patterns": ["Hi", "Hey", "How are you", "Is anyone there?", "Hello", "Good day", "What's up", "Howdy", "Greetings", "Hey there", "Hello, is anyone available?"],
+            "responses": ["Hey :-)", "Hello, thanks for visiting", "Hi there, what can I do for you?", "Hi there, how can I help?"]
         },
         {
             "tag": "goodbye",
-            "patterns": [
-                "Bye",
-                "See you later",
-                "Goodbye",
-                "Take care",
-                "Catch you later",
-                "See ya",
-                "I'm leaving",
-                "Have a good day",
-                "Farewell",
-                "See you next time"
-            ],
-            "responses": [
-                "See you later, thanks for visiting",
-                "Have a nice day",
-                "Bye! Come back again soon.",
-                "Take care! Looking forward to seeing you again."
-            ]
+            "patterns": ["Bye", "See you later", "Goodbye", "Take care", "Catch you later", "See ya", "I'm leaving", "Have a good day", "Farewell", "See you next time"],
+            "responses": ["See you later, thanks for visiting", "Have a nice day", "Bye! Come back again soon.", "Take care! Looking forward to seeing you again."]
         },
         {
             "tag": "thanks",
-            "patterns": [
-                "Thanks",
-                "Thank you",
-                "That's helpful",
-                "Awesome, thanks!",
-                "Thanks a lot",
-                "I appreciate it",
-                "Thanks for your help",
-                "Much appreciated",
-                "Thank you so much",
-                "I'm grateful"
-            ],
-            "responses": [
-                "Happy to help!",
-                "Anytime! Feel free to ask if you have more questions.",
-                "You're welcome!",
-                "Glad I could assist."
-            ]
+            "patterns": ["Thanks", "Thank you", "That's helpful", "Awesome, thanks!", "Thanks a lot", "I appreciate it", "Thanks for your help", "Much appreciated", "Thank you so much", "I'm grateful"],
+            "responses": ["Happy to help!", "Anytime! Feel free to ask if you have more questions.", "You're welcome!", "Glad I could assist."]
         },
         {
             "tag": "hours",
-            "patterns": [
-                "What are your hours?",
-                "When are you open?",
-                "When do you close?",
-                "Operating hours?",
-                "Can I visit you now?",
-                "Are you open today?",
-                "What time do you open and close?",
-                "Tell me your working hours",
-                "Are you available 24/7?"
-            ],
-            "responses": [
-                "We're open from 9am to 9pm every day.",
-                "Our hours are 9am to 9pm daily.",
-                "We're here to help from 9am to 9pm.",
-                "You can visit us between 9am and 9pm."
-            ]
+            "patterns": ["What are your hours?", "When are you open?", "When do you close?", "Operating hours?", "Can I visit you now?", "Are you open today?", "What time do you open and close?", "Tell me your working hours", "Are you available 24/7?"],
+            "responses": ["We're open from 9am to 9pm every day.", "Our hours are 9am to 9pm daily.", "We're here to help from 9am to 9pm.", "You can visit us between 9am and 9pm."]
         },
         {
             "tag": "payments",
-            "patterns": [
-                "Do you accept credit cards?",
-                "Can I pay with cash?",
-                "Are there any payment options?",
-                "Do you take online payments?",
-                "What are the payment methods?",
-                "Can I pay by card?",
-                "Is digital payment accepted?",
-                "Can I pay using my mobile wallet?"
-            ],
-            "responses": [
-                "Yes, we accept all major credit cards, cash, and mobile payments.",
-                "We support payments through cash, card, and digital wallets.",
-                "Our accepted payment methods include credit cards, debit cards, and digital payments.",
-                "You can pay using cash, card, or through online payment options."
-            ]
+            "patterns": ["Do you accept credit cards?", "Can I pay with cash?", "Are there any payment options?", "Do you take online payments?", "What are the payment methods?", "Can I pay by card?", "Is digital payment accepted?", "Can I pay using my mobile wallet?"],
+            "responses": ["Yes, we accept all major credit cards, cash, and mobile payments.", "We support payments through cash, card, and digital wallets.", "Our accepted payment methods include credit cards, debit cards, and digital payments.", "You can pay using cash, card, or through online payment options."]
         },
         {
             "tag": "shipping",
-            "patterns": [
-                "How long does shipping take?",
-                "What is the shipping time?",
-                "When will my order arrive?",
-                "How soon can I get my package?",
-                "What's the expected delivery time?",
-                "Is there express shipping?",
-                "Can you deliver in one day?",
-                "Tell me the delivery options",
-                "Do you ship internationally?"
-            ],
-            "responses": [
-                "Shipping typically takes 3-5 business days.",
-                "Delivery time varies based on location but usually takes 3-5 business days.",
-                "Express shipping options are available for faster delivery.",
-                "International shipping may take longer, depending on the destination."
-            ]
+            "patterns": ["How long does shipping take?", "What is the shipping time?", "When will my order arrive?", "How soon can I get my package?", "What's the expected delivery time?", "Is there express shipping?", "Can you deliver in one day?", "Tell me the delivery options", "Do you ship internationally?"],
+            "responses": ["Shipping typically takes 3-5 business days.", "Delivery time varies based on location but usually takes 3-5 business days.", "Express shipping options are available for faster delivery.", "International shipping may take longer, depending on the destination."]
         },
         {
             "tag": "contact",
-            "patterns": [
-                "How can I contact you?",
-                "What's your phone number?",
-                "Where are you located?",
-                "Can I get your email?",
-                "I want to reach out to you",
-                "Provide me with your contact information",
-                "How do I get in touch?",
-                "Do you have a contact number?",
-                "Can I have your address?"
-            ],
-            "responses": [
-                "You can contact us via phone at (123) 456-7890 or email us at support@example.com.",
-                "We're located at 1234 Elm Street, Anytown. Feel free to call or visit!",
-                "Reach out to us at (123) 456-7890 or support@example.com.",
-                "Our contact number is (123) 456-7890. Email us at support@example.com if you prefer."
-            ]
+            "patterns": ["How can I contact you?", "What's your phone number?", "Where are you located?", "Can I get your email?", "I want to reach out to you", "Provide me with your contact information", "How do I get in touch?", "Do you have a contact number?", "Can I have your address?"],
+            "responses": ["You can contact us via phone at (123) 456-7890 or email us at support@example.com.", "We're located at 1234 Elm Street, Anytown. Feel free to call or visit!", "Reach out to us at (123) 456-7890 or support@example.com.", "Our contact number is (123) 456-7890. Email us at support@example.com if you prefer."]
         },
         {
             "tag": "services",
-            "patterns": [
-                "What services do you offer?",
-                "Tell me about your services",
-                "Can you provide details on your offerings?",
-                "Do you offer any special services?",
-                "What can you help me with?",
-                "List your services",
-                "Describe your services",
-                "What solutions do you offer?"
-            ],
-            "responses": [
-                "We offer a wide range of services including web development, mobile app development, and digital marketing.",
-                "Our main services are web development, SEO, and custom software solutions.",
-                "We specialize in web and mobile app development along with e-commerce solutions.",
-                "Our services include custom software development, web and mobile applications, and IT consulting."
-            ]
+            "patterns": ["What services do you offer?", "Tell me about your services", "Can you provide details on your offerings?", "Do you offer any special services?", "What can you help me with?", "List your services", "Describe your services", "What solutions do you offer?"],
+            "responses": ["We offer a wide range of services including web development, mobile app development, and digital marketing.", "Our main services are web development, SEO, and custom software solutions.", "We specialize in web and mobile app development along with e-commerce solutions.", "Our services include custom software development, web and mobile applications, and IT consulting."]
+        },
+        {
+            "tag": "web_development",
+            "patterns": ["What is web development?", "Tell me about web development", "Do you offer web development services?", "How can web development help my business?", "Why should I consider web development?"],
+            "responses": ["Web development involves creating and maintaining websites. It includes web design, web publishing, and database management.", "We build custom websites to help businesses enhance their online presence.", "Web development services include building websites from scratch, optimizing for SEO, and integrating e-commerce solutions."]
+        },
+        {
+            "tag": "mobile_app_development",
+            "patterns": ["Do you create mobile apps?", "Tell me about mobile app development", "What is involved in creating a mobile app?", "Can you help me build a mobile app?"],
+            "responses": ["We specialize in building mobile apps for iOS and Android platforms.", "Our mobile app development includes designing user-friendly interfaces and creating custom functionality.", "Mobile apps help businesses reach customers on their mobile devices, providing convenient access to services."]
+        },
+        {
+            "tag": "digital_marketing",
+            "patterns": ["What is digital marketing?", "How can digital marketing help my business?", "Do you offer SEO services?", "Tell me about your digital marketing services"],
+            "responses": ["Our digital marketing services help improve your online visibility and attract more customers.", "We offer SEO, social media marketing, content creation, and online advertising to boost your brand.", "Digital marketing can increase traffic to your website and improve brand recognition."]
+        },
+        {
+            "tag": "support",
+            "patterns": ["I need help", "Can you assist me?", "I'm having an issue", "I need support", "How can I get assistance?", "I need technical support"],
+            "responses": ["I'm here to help! What do you need assistance with?", "Please describe the issue, and I'll do my best to help.", "Feel free to tell me your problem, and I’ll try to assist."]
+        },
+        {
+            "tag": "pricing",
+            "patterns": ["What is your pricing?", "How much do you charge?", "What are the rates?", "Tell me about the pricing", "Do you have a price list?"],
+            "responses": ["We offer flexible pricing options depending on the service. Please reach out for a detailed quote.", "Our rates vary depending on the project requirements. Contact us for a custom quote.", "Our pricing is competitive, and we tailor solutions to fit your budget."]
+        },
+        {
+            "tag": "location",
+            "patterns": ["Where are you located?", "Where can I find you?", "Do you have an office?", "What is your address?", "Tell me your location"],
+            "responses": ["We're located at 1234 Elm Street, Anytown. Feel free to visit us!", "Our office is at 1234 Elm Street. We’d be happy to have you visit!", "You can find us at 1234 Elm Street. We’re open from 9am to 9pm."]
+        },
+        {
+            "tag": "team",
+            "patterns": ["Who is on your team?", "Tell me about your team", "Who are your experts?", "What is your team size?", "Do you have specialists?"],
+            "responses": ["Our team consists of experienced professionals in web development, mobile app development, and digital marketing.", "We have a skilled team of developers, designers, and marketers ready to assist you.", "Our team is made up of specialists dedicated to delivering high-quality solutions for our clients."]
+        },
+        {
+            "tag": "technology",
+            "patterns": ["What technologies do you use?", "Which platforms do you work with?", "Tell me about your tech stack", "Do you use modern technologies?", "What programming languages do you use?"],
+            "responses": ["We work with modern technologies including Python, JavaScript, React, and Node.js.", "Our tech stack includes Django, React, and mobile frameworks like Flutter and Swift.", "We stay updated with the latest technologies to deliver scalable and efficient solutions."]
+        },
+        {
+            "tag": "feedback",
+            "patterns": ["How can I give feedback?", "Where can I leave a review?", "I want to share my experience", "How do I provide feedback?", "Can I leave a testimonial?"],
+            "responses": ["We'd love to hear your feedback! You can email us or leave a review on our website.", "Feel free to share your experience with us. We value your feedback!", "You can provide feedback through our website or reach out via email."]
+        },
+        {
+            "tag": "job_openings",
+            "patterns": ["Are you hiring?", "Do you have any job openings?", "How can I join your team?", "Do you have career opportunities?", "Are there any vacancies?"],
+            "responses": ["Yes, we're always looking for talented individuals! Visit our Careers page for current openings.", "Check out our Careers section for available roles and apply online!", "We're hiring! If you're interested, visit our Careers page for more information."]
+        },
+        {
+            "tag": "refund_policy",
+            "patterns": ["What is your refund policy?", "Can I get a refund?", "How do refunds work?", "What if I'm not satisfied?", "Is there a money-back guarantee?"],
+            "responses": ["We offer a refund if you're not satisfied with our service within the first 30 days.", "Our refund policy includes a 30-day satisfaction guarantee. Contact support for details.", "Please reach out to support regarding our refund policy. We want you to be satisfied with our services."]
+        },
+        {
+            "tag": "discounts",
+            "patterns": ["Do you offer discounts?", "Is there any discount?", "What are your discount options?", "Can I get a discount?", "Do you have special offers?"],
+            "responses": ["We offer seasonal discounts and promotions. Check our website for current offers!", "We have discounts available for long-term projects. Contact us for details.", "Sign up for our newsletter to stay informed about discounts and special offers."]
+        },
+        {
+            "tag": "recommendations",
+            "patterns": ["Can you recommend a service?", "What should I choose?", "I'm not sure what service I need", "Help me pick a service", "What do you suggest?"],
+            "responses": ["Tell me more about your needs, and I can recommend a service that suits you.", "Based on your requirements, I can help guide you to the right service.", "I'd be happy to make a recommendation. Could you provide more details about your needs?"]
+        },
+        {
+            "tag": "security",
+            "patterns": ["Is my information secure?", "What are your security practices?", "How do you protect data?", "Is your service safe?", "How do you handle privacy?"],
+            "responses": ["We prioritize data security with encryption and privacy protocols in all our services.", "Your data is safe with us. We follow industry best practices to ensure security and privacy.", "We use secure servers and comply with data protection laws to keep your information safe."]
+        },
+        {
+            "tag": "portfolio",
+            "patterns": ["Can I see your work?", "Do you have a portfolio?", "Show me your previous projects", "Do you have client examples?", "Tell me about your past work"],
+            "responses": ["You can view our portfolio on our website to see some of our recent projects.", "Our portfolio showcases the range of projects we've completed. Visit our website to learn more!", "We have examples of our work on our website. Feel free to take a look!"]
         }
     ]
 }
