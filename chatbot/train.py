@@ -80,3 +80,15 @@ if __name__ == '__main__':
             print(f'epoch {epoch + 1}/{num_epochs}, loss= {loss.item():.4f}')
             
     print(f'final loss= {loss.item():.4f}')
+    
+data = {
+    "model_state" : model.state_dict(),
+    "input_size" : input_size,
+    "output_size" : output_size,
+    "hidden_size" : hidden_size,
+    "all_words" : all_words,
+    "tags" : tags
+}
+FILE = "data.path"
+torch.save(data,FILE)
+print(f"Training Completed. File save to {FILE}")
