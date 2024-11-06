@@ -21,7 +21,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'blogapp',
+    'users',
+    'admin_panel',
     'rest_framework_simplejwt',
     'django_celery_results',  
     'django_celery_beat',
@@ -70,7 +71,7 @@ SIMPLE_JWT = {
   }
 
 
-AUTH_USER_MODEL = 'blogapp.UserData'
+AUTH_USER_MODEL = 'users.UserData'
 
 DATABASES = {
     'default': {
