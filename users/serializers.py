@@ -47,7 +47,6 @@ class UserLoginSerializer(serializers.Serializer):
         except UserData.DoesNotExist:
             raise serializers.ValidationError("User with this Email does not exist.")
         if not check_password(password, user.password):
-            print(f":::::    {password}:::::::   {user.password}")
             raise serializers.ValidationError("Incorrect password.")
         data['user'] = user
         return data
