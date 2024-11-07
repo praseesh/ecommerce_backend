@@ -11,7 +11,7 @@ from users.serializers import UserDataSerializer as UDS
 from .utils import  send_mail_otp
 from products.models import Product
 from .pagination import AdminUserPagination
-
+from rest_framework.exceptions import NotFound, PermissionDenied
 
 class AdminLoginView(APIView):
     permission_classes = [AllowAny] 
@@ -88,3 +88,18 @@ class AdminUserCreate(APIView):
                     status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class DeleteProfileView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+    def delete(self, request, user_id, *args, **kwargs):
+        if not request.user.is_staff:
+            raise PermissionDenied("You do not have permission to perform this action.")
+
+        try:
+            user = UserData.objects.get(id=user_id)
+            user.delete()  
+            return Response(
+                {'message': 'User profile deleted successfully.'},
+                status=status.HTTP_204_NO_CONTENT)
+        except UserData.DoesNotExist:
+            raise NotFound("User not found.")
