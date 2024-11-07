@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from rest_framework.exceptions import ValidationError
-from .models import Posts, UserData
+from users.models import UserData
 
 class AdminLoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -24,3 +24,8 @@ class AdminLoginSerializer(serializers.Serializer):
 
         attrs['user'] = user
         return attrs
+class UserDataSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserData
+        fields = ['id', 'firstname', 'lastname', 'username', 'email', 'phone', 'profile_photo', 'age', 'gender', 'city', 'is_active']
+        
