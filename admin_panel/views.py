@@ -88,13 +88,12 @@ class AdminUserCreate(APIView):
                     status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-class DeleteProfileView(APIView):
+class DeleteUserView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
     def delete(self, request, user_id, *args, **kwargs):
         if not request.user.is_staff:
             raise PermissionDenied("You do not have permission to perform this action.")
-
         try:
             user = UserData.objects.get(id=user_id)
             user.delete()  
