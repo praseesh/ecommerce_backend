@@ -7,6 +7,8 @@ from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from users.models import UserData
+from users.serializers import UserDataSerializer as UDS
+from .utils import  send_mail_otp
 from products.models import Product
 from .pagination import AdminUserPagination
 
@@ -67,4 +69,22 @@ class AdminUserView(generics.ListAPIView):
     pagination_class = AdminUserPagination
     
     
-# class AdminUserCreate(APIView):
+class AdminUserCreate(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = UDS(data=request.data)
+        if serializer.is_valid():
+            welcome_message = "User Registration Successful"
+            email = request.data.get('email')
+            username = request.data.get('username')
+            if email and username:
+               
+                send_mail_otp(email, welcome_message)
+                return Response(
+                    {'message': f'User registration initiated. A welcome email has been sent to {username}.' },
+                    status=status.HTTP_201_CREATED)
+            else:
+                return Response(
+                    {'message': 'Email or Username missing.'},
+                    status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
