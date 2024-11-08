@@ -104,7 +104,7 @@ class UserProfileView(APIView):
 class CreateProfileView(APIView):
     authentication_classes = [JWTAuthentication]
     permission_classes = [IsAuthenticated]
-    parser_classes = [MultiPartParser]  # Enable handling of file uploads
+    parser_classes = [MultiPartParser]  
 
     def patch(self, request, *args, **kwargs):
         user = request.user
@@ -113,3 +113,4 @@ class CreateProfileView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    

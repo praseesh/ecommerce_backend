@@ -2,14 +2,16 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
-from .serializers import AdminLoginSerializer,UserDataSerializer
+from .serializers import AdminLoginSerializer, AdminUserViewSerializer,UserDataSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from users.models import UserData
+from users.serializers import UserDataSerializer as UDS
+from .utils import  send_mail_otp
 from products.models import Product
 from .pagination import AdminUserPagination
-
+from rest_framework.exceptions import NotFound, PermissionDenied
 
 class AdminLoginView(APIView):
     permission_classes = [AllowAny] 
@@ -67,4 +69,48 @@ class AdminUserView(generics.ListAPIView):
     pagination_class = AdminUserPagination
     
     
-# class AdminUserCreate(APIView):
+class AdminUserCreate(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = UDS(data=request.data)
+        if serializer.is_valid():
+            welcome_message = "User Registration Successful"
+            email = request.data.get('email')
+            username = request.data.get('username')
+            if email and username:
+               
+                send_mail_otp(email, welcome_message)
+                return Response(
+                    {'message': f'User registration initiated. A welcome email has been sent to {username}.' },
+                    status=status.HTTP_201_CREATED)
+            else:
+                return Response(
+                    {'message': 'Email or Username missing.'},
+                    status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+class DeleteUserView(APIView):
+    def delete(self, request, user_id, *args, **kwargs):
+        log_user = request.user
+        log_user
+        id =log_user.id
+        user_obj = UserData.objects.get(id=id)
+        print(user_obj.is_staff, user_obj.username)
+        if not request.user.is_staff:
+            raise PermissionDenied("You do not have permission to perform this action.")
+        try:
+            user = UserData.objects.get(id=user_id)
+            user.delete()  
+            return Response(
+                {'message': 'User profile deleted successfully.'},
+                status=status.HTTP_204_NO_CONTENT)
+        except UserData.DoesNotExist:
+            raise NotFound("User not found.")
+        
+class AdminUserProfileView(APIView):
+    authentication_classes = [JWTAuthentication]  
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id, *args, **kwargs):
+        user = UserData.objects.get(id=user_id)
+        serializer = AdminUserViewSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)

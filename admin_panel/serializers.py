@@ -28,4 +28,8 @@ class UserDataSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserData
         fields = ['id', 'firstname', 'lastname', 'username', 'email', 'phone', 'profile_photo', 'age', 'gender', 'city', 'is_active']
-        
+
+class AdminUserViewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UserData
+        exclude = ['password']
