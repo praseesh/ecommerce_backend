@@ -114,3 +114,9 @@ class AdminUserProfileView(APIView):
         user = UserData.objects.get(id=user_id)
         serializer = AdminUserViewSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+'''                                      Product Management                                              '''
+
+class ProductCreationView(APIView):
+    def post(self,request,*args, **kwargs):
+        
