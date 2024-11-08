@@ -2,12 +2,12 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
-from .serializers import AdminLoginSerializer,UserDataSerializer
+from .serializers import AdminLoginSerializer, AdminUserViewSerializer,UserDataSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from users.models import UserData
-from users.serializers import UserDataSerializer as UDS, UserProfileSerializer
+from users.serializers import UserDataSerializer as UDS
 from .utils import  send_mail_otp
 from products.models import Product
 from .pagination import AdminUserPagination
@@ -112,5 +112,5 @@ class AdminUserProfileView(APIView):
 
     def get(self, request, user_id, *args, **kwargs):
         user = UserData.objects.get(id=user_id)
-        serializer = UserProfileSerializer(user)
+        serializer = AdminUserViewSerializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
