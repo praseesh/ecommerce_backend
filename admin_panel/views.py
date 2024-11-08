@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.parsers import MultiPartParser
-from products.serializers import ProductCreationSerializer
+from products.serializers import ProductCreationSerializer, ProductViewSerializer
 from .serializers import AdminLoginSerializer, AdminUserViewSerializer,UserDataSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -128,7 +128,8 @@ class ProductCreationView(APIView):
             serializer.save()
             return Response({'message': 'Product created successfully'}, status=status.HTTP_201_CREATED)
         return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-    
-class AdminProductView(APIView):
-    pass
 
+class AdminProductView(generics.ListAPIView):
+    queryset = Product.objects.all().order_by('-id')  
+    serializer_class = ProductViewSerializer
+    pagination_class = AdminUserPagination
