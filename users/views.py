@@ -87,10 +87,6 @@ class RegisteredUserListView(APIView):
         serializer = UserViewSerializer(users, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-class EditProfileView(APIView):
-    # authentication_classes = [JWTAuthentication]  
-    # permission_classes = [IsAuthenticated]
-    pass
 
 class UserProfileView(APIView):
     authentication_classes = [JWTAuthentication]  

@@ -3,7 +3,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from .views import (
     AdminLoginView,AdminDashboardView,AdminUserView,AdminUserCreate,
-    DeleteUserView,AdminUserProfileView
+    DeleteUserView,AdminUserProfileView,ProductCreationView,AdminProductView
 )
 
 urlpatterns = [
@@ -12,6 +12,9 @@ urlpatterns = [
     path('users/', AdminUserView.as_view(), name='admin-user-list'),
     path('user-create/', AdminUserCreate.as_view(), name='admin-user-create'),
     path('delete-user/<int:user_id>/', DeleteUserView.as_view(), name='delete-user'),
-    path('user-profile/<int:user_id>/',AdminUserProfileView.as_view(),name='user-profile')
+    path('user-profile/<int:user_id>/',AdminUserProfileView.as_view(),name='user-profile'),
+    path('product-create/', ProductCreationView.as_view(), name='product-create'),
+    path('product-view/', AdminProductView.as_view(), name='product-view'),
+    
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
