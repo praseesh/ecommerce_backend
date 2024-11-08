@@ -7,7 +7,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from users.models import UserData
-from users.serializers import UserDataSerializer as UDS
+from users.serializers import UserDataSerializer as UDS, UserProfileSerializer
 from .utils import  send_mail_otp
 from products.models import Product
 from .pagination import AdminUserPagination
@@ -89,9 +89,12 @@ class AdminUserCreate(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 class DeleteUserView(APIView):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
     def delete(self, request, user_id, *args, **kwargs):
+        log_user = request.user
+        log_user
+        id =log_user.id
+        user_obj = UserData.objects.get(id=id)
+        print(user_obj.is_staff, user_obj.username)
         if not request.user.is_staff:
             raise PermissionDenied("You do not have permission to perform this action.")
         try:
@@ -102,3 +105,12 @@ class DeleteUserView(APIView):
                 status=status.HTTP_204_NO_CONTENT)
         except UserData.DoesNotExist:
             raise NotFound("User not found.")
+        
+class AdminUserProfileView(APIView):
+    authentication_classes = [JWTAuthentication]  
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, user_id, *args, **kwargs):
+        user = UserData.objects.get(id=user_id)
+        serializer = UserProfileSerializer(user)
+        return Response(serializer.data, status=status.HTTP_200_OK)
