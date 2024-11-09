@@ -1,5 +1,8 @@
 from django.db import models
-    
+from users.models import UserData
+
+"""                                                  PRODUCT                                                  """    
+
 class Category(models.Model):
     name = models.CharField(max_length=255)
     image = models.ImageField(upload_to='category_images/', blank=True, null=True)
@@ -31,3 +34,26 @@ class Product(models.Model):
         return self.name
     class Meta:
         db_table = 'product'
+    
+"""                                                  CART                                                  """    
+
+class Cart(models.Model):
+    user = models.OneToOneField(UserData, on_delete=models.CASCADE, related_name='cart')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    class Meta:
+        db_table = 'cart'
+    def __str__(self):
+        return f"{self.user.username}'s Cart"
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+    class Meta:
+        db_table = 'cart_item'
+    def __str__(self):
+        return f"{self.quantity} of {self.product.name}"
+
+    def get_total_price(self):
+        return self.quantity * self.product.price

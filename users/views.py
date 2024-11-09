@@ -1,5 +1,4 @@
 from django.core.mail import send_mail
-
 from admin_panel.pagination import AdminUserPagination
 from products.models import Product
 from products.serializers import ProductViewSerializer
@@ -11,7 +10,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.http import HttpResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+from rest_framework import status,generics
 from .models import OTPVerification, UserData,TemporaryUserRegistration
 from .serializers import OTPRequestSerializer, OTPVerifySerializer,UserDataSerializer, PostViewSerializer, UserLoginSerializer, UserProfileSerializer, UserViewSerializer
 from .utils import generate_otp, send_mail_otp
@@ -114,7 +113,7 @@ class CreateProfileView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-class UserDashboard(APIView):
+class UserDashboard(generics.ListAPIView):
     queryset = Product.objects.all().order_by('-id')  
     serializer_class = ProductViewSerializer
     pagination_class = AdminUserPagination

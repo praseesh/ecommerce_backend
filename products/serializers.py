@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Product, Category
+from .models import Cart, CartItem, Product, Category
 
 class ProductCreationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -84,3 +84,18 @@ class ProductUpdationSerializer(serializers.ModelSerializer):
         if self.instance and self.instance.id in [product.id for product in value.all()]:
             raise serializers.ValidationError("A product cannot be related to itself.")
         return value
+    
+
+class CartItemSerializer(serializers.ModelSerializer):
+    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
+    
+    class Meta:
+        model = CartItem
+        fields = ['product', 'quantity']
+
+class CartSerializer(serializers.ModelSerializer):
+    items = CartItemSerializer(many=True)
+    
+    class Meta:
+        model = Cart
+        fields = ['id', 'user', 'items', 'created_at', 'updated_at']

@@ -4,7 +4,8 @@ from django.conf.urls.static import static
 
 from .views import (
     UserRegistrationViews, VerifyOTPView, LoginView,
-    RegisteredUserListView, UserProfileView, CreateProfileView
+    RegisteredUserListView, UserProfileView, CreateProfileView,
+    UserDashboard
 )
 
 urlpatterns = [
@@ -14,4 +15,6 @@ urlpatterns = [
     path('user-list/', RegisteredUserListView.as_view(), name="user-list"),
     path('user-profile/',UserProfileView.as_view(), name='user-profile'),
     path('create-profile/',CreateProfileView.as_view(), name='create-profile'),
+    path('user-dashboard/', UserDashboard.as_view(), name='user-dashboard')
+    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
