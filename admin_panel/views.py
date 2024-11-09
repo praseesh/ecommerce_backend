@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status, generics
 from rest_framework.parsers import MultiPartParser
-from products.serializers import ProductCreationSerializer, ProductViewSerializer
+from products.serializers import ProductCreationSerializer, ProductUpdationSerializer, ProductViewSerializer
 from .serializers import AdminLoginSerializer, AdminUserViewSerializer,UserDataSerializer
 from rest_framework.permissions import AllowAny
 from rest_framework_simplejwt.authentication import JWTAuthentication
@@ -133,3 +133,50 @@ class AdminProductView(generics.ListAPIView):
     queryset = Product.objects.all().order_by('-id')  
     serializer_class = ProductViewSerializer
     pagination_class = AdminUserPagination
+    
+class AdminProductById(APIView):
+    def get(self, request, product_id, *args, **kwargs):
+        try:
+            product = Product.objects.get(id=product_id)
+            serializer = ProductViewSerializer(product)
+            return Response({
+                'message': "Product Details",
+                'data': serializer.data
+            }, status=status.HTTP_200_OK)
+        except Product.DoesNotExist:
+            return Response({
+                'message': "Product not found"
+            }, status=status.HTTP_404_NOT_FOUND)
+
+class AdminProductDeleteAndUpdateView(APIView):
+    def patch(self, request, product_id, *args, **kwargs):
+        try:
+            product = Product.objects.get(id=product_id)
+            serializer = ProductUpdationSerializer(product, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({
+                    'message': "Product updated successfully",
+                    'data': serializer.data
+                }, status=status.HTTP_200_OK)
+            return Response({
+                'message': "Product update failed",
+                'errors': serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+        except Product.DoesNotExist:
+            return Response({
+                'message': "Product not found"
+            }, status=status.HTTP_404_NOT_FOUND)
+            
+    def delete(self, request, product_id, *args, **kwargs):
+        try:
+            product = Product.objects.get(id=product_id)
+            product.delete()
+            return Response({
+                'message': "Product deleted successfully"
+            }, status=status.HTTP_204_NO_CONTENT)
+        except Product.DoesNotExist:
+            return Response({
+                'message': "Product not found"
+            }, status=status.HTTP_404_NOT_FOUND)
+            

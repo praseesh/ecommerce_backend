@@ -1,4 +1,8 @@
 from django.core.mail import send_mail
+
+from admin_panel.pagination import AdminUserPagination
+from products.models import Product
+from products.serializers import ProductViewSerializer
 from .models import OTPVerification, Posts
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -110,3 +114,7 @@ class CreateProfileView(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
+class UserDashboard(APIView):
+    queryset = Product.objects.all().order_by('-id')  
+    serializer_class = ProductViewSerializer
+    pagination_class = AdminUserPagination
