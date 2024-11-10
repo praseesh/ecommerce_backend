@@ -124,18 +124,14 @@ class ToggleUserActiveStatus(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, user_id, *args, **kwargs):
-        # Ensure the requesting user is an admin
         if not request.user.is_staff:
             raise PermissionDenied("You do not have permission to perform this action.")
-        
-        # Get the action from the request data
         action = request.data.get('action')
         if action not in ['block', 'unblock']:
             return Response(
                 {'message': 'Invalid action. Please specify either "block" or "unblock".'},
                 status=status.HTTP_400_BAD_REQUEST
             )
-
         try:
             user = UserData.objects.get(id=user_id)
             if action == 'block':
