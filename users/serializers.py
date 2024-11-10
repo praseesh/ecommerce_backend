@@ -40,14 +40,21 @@ class UserLoginSerializer(serializers.Serializer):
     def validate(self, data):
         email = data.get('email')
         password = data.get('password')
+
         if not email or not password:
-            raise serializers.ValidationError("Must include both username and password.")
+            raise serializers.ValidationError("Must include both email and password.")
+
         try:
             user = UserData.objects.get(email=email)
         except UserData.DoesNotExist:
-            raise serializers.ValidationError("User with this Email does not exist.")
+            raise serializers.ValidationError("User with this email does not exist.")
+
         if not check_password(password, user.password):
             raise serializers.ValidationError("Incorrect password.")
+
+        if not user.is_active:
+            raise serializers.ValidationError("The requested email is temporarily blocked. Please contact the admin.")
+
         data['user'] = user
         return data
 

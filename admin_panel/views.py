@@ -138,7 +138,6 @@ class ToggleUserActiveStatus(APIView):
 
         try:
             user = UserData.objects.get(id=user_id)
-            
             if action == 'block':
                 if not user.is_active:
                     return Response(
