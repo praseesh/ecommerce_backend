@@ -119,6 +119,55 @@ class AdminUserProfileView(APIView):
     
 '''                                        Product Management                                              '''
 
+class ToggleUserActiveStatus(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, user_id, *args, **kwargs):
+        # Ensure the requesting user is an admin
+        if not request.user.is_staff:
+            raise PermissionDenied("You do not have permission to perform this action.")
+        
+        # Get the action from the request data
+        action = request.data.get('action')
+        if action not in ['block', 'unblock']:
+            return Response(
+                {'message': 'Invalid action. Please specify either "block" or "unblock".'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+            user = UserData.objects.get(id=user_id)
+            
+            if action == 'block':
+                if not user.is_active:
+                    return Response(
+                        {'message': 'User is already blocked.'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                user.is_active = False
+                user.save()
+                return Response(
+                    {'message': f'User {user.username} has been blocked successfully.'},
+                    status=status.HTTP_200_OK
+                )
+                
+            elif action == 'unblock':
+                if user.is_active:
+                    return Response(
+                        {'message': 'User is already active.'},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+                user.is_active = True
+                user.save()
+                return Response(
+                    {'message': f'User {user.username} has been unblocked successfully.'},
+                    status=status.HTTP_200_OK
+                )
+                
+        except UserData.DoesNotExist:
+            raise NotFound("User not found.")
+
 class ProductCreationView(APIView):
     parser_classes = [MultiPartParser] 
 

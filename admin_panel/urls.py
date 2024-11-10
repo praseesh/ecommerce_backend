@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from .views import (
     AdminLoginView,AdminDashboardView,AdminUserView,AdminUserCreate,
     DeleteUserView,AdminUserProfileView,ProductCreationView,AdminProductView,
-    AdminProductById,AdminProductDeleteAndUpdateView,
+    AdminProductById,AdminProductDeleteAndUpdateView, ToggleUserActiveStatus,
 )
 
 urlpatterns = [
@@ -14,6 +14,7 @@ urlpatterns = [
     path('user-create/', AdminUserCreate.as_view(), name='admin-user-create'),
     path('delete-user/<int:user_id>/', DeleteUserView.as_view(), name='delete-user'),
     path('user-profile/<int:user_id>/',AdminUserProfileView.as_view(),name='user-profile'),
+    path('toggle-user-status/<int:user_id>/', ToggleUserActiveStatus.as_view(), name='toggle-user-status'),
     path('product-create/', ProductCreationView.as_view(), name='product-create'),
     path('product-view/', AdminProductView.as_view(), name='product-view'),
     path('product-by-id/<int:product_id>/', AdminProductById.as_view(), name='admin-product-by-id'),
