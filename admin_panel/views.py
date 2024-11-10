@@ -146,7 +146,6 @@ class ToggleUserActiveStatus(APIView):
                     {'message': f'User {user.username} has been blocked successfully.'},
                     status=status.HTTP_200_OK
                 )
-                
             elif action == 'unblock':
                 if user.is_active:
                     return Response(
@@ -159,7 +158,6 @@ class ToggleUserActiveStatus(APIView):
                     {'message': f'User {user.username} has been unblocked successfully.'},
                     status=status.HTTP_200_OK
                 )
-                
         except UserData.DoesNotExist:
             raise NotFound("User not found.")
 
