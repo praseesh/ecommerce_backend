@@ -33,6 +33,15 @@ class ProductCreationSerializer(serializers.ModelSerializer):
         if value < 0.0 or value > 5.0:
             raise serializers.ValidationError("Rating must be between 0.0 and 5.0.")
         return value
+    def validate_image(self, image):
+        max_size_mb = 5
+        if image.size > max_size_mb * 1024 * 1024:
+            raise serializers.ValidationError(f"Image size must be less than {max_size_mb} MB.")
+        valid_extensions = ['.png', '.jpg', '.jpeg']
+        if not any([image.name.lower().endswith(ext) for ext in valid_extensions]):
+            raise serializers.ValidationError(f"Supported image formats are: {', '.join(valid_extensions)}")
+
+        return image
 
     def validate_related_products(self, value):
         if self.instance and self.instance.id in [product.id for product in value.all()]:
@@ -104,3 +113,4 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ['id', 'user', 'items', 'created_at', 'updated_at']
+        
