@@ -17,6 +17,10 @@ from .utils import generate_otp, send_mail_otp
 from .tasks import send_mail_otp_task, send_sms_otp_task
 from django.contrib.auth.hashers import make_password
 from rest_framework.parsers import MultiPartParser
+import razorpay
+from django.conf import settings
+from django.http import JsonResponse
+from rest_framework.decorators import api_view
 
 class UserRegistrationViews(APIView):
     def post(self, request, *args, **kwargs):
@@ -117,3 +121,24 @@ class UserDashboard(generics.ListAPIView):
     queryset = Product.objects.all().order_by('-id')  
     serializer_class = ProductViewSerializer
     pagination_class = AdminUserPagination
+    
+
+"""                                         R A Z O R P A Y                                                      """
+
+client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+@api_view(['POST'])
+def create_order(request):
+    amount = 50000
+    
+    order = client.order.create(dict(
+        amount=amount, 
+        currency='INR', 
+        payment_capture='1'  
+    ))
+
+    return JsonResponse({
+        'order_id': order['id'],
+        'amount': amount,
+        'razorpay_key': settings.RAZORPAY_KEY_ID 
+    })
