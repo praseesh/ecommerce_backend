@@ -2,9 +2,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Cart, CartItem, Product
-from .serializers import CartSerializer, CartItemSerializer
+from .serializers import CartSerializer, CartItemSerializer, ProductViewSerializer
 from django.shortcuts import get_object_or_404
 from users.models import UserData
+from rest_framework.generics import ListAPIView
+from rest_framework.filters import SearchFilter
+from django_filters.rest_framework import DjangoFilterBackend
+
 
 class CartView(APIView):
     def get(self, request, *args, **kwargs):
@@ -35,4 +39,16 @@ class CartView(APIView):
         cart_item.delete()
         return Response({'message': 'Item removed from cart'}, status=status.HTTP_200_OK)
     
-    
+
+
+class ProductListAndFilterAPIView(ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductViewSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+
+    filterset_fields = {
+        'category': ['exact'],   
+        'price': ['gte', 'lte'], 
+        'stock_quantity': ['gte', 'lte'],  
+    }
+    search_fields = ['name', 'description']

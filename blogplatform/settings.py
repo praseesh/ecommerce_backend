@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django_celery_beat',
     'chatbot',
     'products',
+    'django_filters',
 ]
 
 MIDDLEWARE = [
