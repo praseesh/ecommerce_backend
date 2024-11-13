@@ -13,7 +13,7 @@ from rest_framework.response import Response
 from rest_framework import status,generics
 from .models import OTPVerification, UserData,TemporaryUserRegistration
 from .serializers import OTPRequestSerializer, OTPVerifySerializer,UserDataSerializer, PostViewSerializer, UserLoginSerializer, UserProfileSerializer, UserViewSerializer
-from .utils import generate_otp, send_mail_otp
+from .utils import generate_otp
 from .tasks import send_mail_otp_task, send_sms_otp_task
 from django.contrib.auth.hashers import make_password
 from rest_framework.parsers import MultiPartParser
@@ -83,7 +83,6 @@ class LoginView(APIView):
             }, status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class RegisteredUserListView(APIView):
     authentication_classes = [JWTAuthentication]  
