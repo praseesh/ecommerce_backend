@@ -136,7 +136,6 @@ def create_order(request):
         currency='INR', 
         payment_capture='1'  
     ))
-
     return JsonResponse({
         'order_id': order['id'],
         'amount': amount,
