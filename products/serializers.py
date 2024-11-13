@@ -1,5 +1,6 @@
 from rest_framework import serializers
-from .models import Cart, CartItem, Product, Category
+from .models import Cart, CartItem, Product, Category,OrderItem, Order
+
 
 class ProductCreationSerializer(serializers.ModelSerializer):
     class Meta:
@@ -94,6 +95,7 @@ class ProductUpdationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("A product cannot be related to itself.")
         return value
     
+"""                                             C A R T                                                         """
 
 class CartItemSerializer(serializers.ModelSerializer):
     product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
@@ -113,4 +115,34 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ['id', 'user', 'items', 'created_at', 'updated_at']
+     
+"""                                             O R D E R                                                         """
+
+class OrderItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = OrderItem
+        fields = ['product', 'quantity', 'price']
         
+class OrderSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True)  
+
+    class Meta:
+        model = Order
+        fields = ['id', 'user', 'status', 'total_price', 'items', 'created_at']
+
+    def create(self, validated_data):
+        items_data = validated_data.pop('items')  
+        order = Order.objects.create(**validated_data)  
+        total_price = 0
+
+        for item_data in items_data:
+            product = item_data['product']
+            quantity = item_data['quantity']
+            price = product.price * quantity
+            OrderItem.objects.create(order=order, product=product, quantity=quantity, price=price)
+            total_price += price
+
+        order.total_price = total_price
+        order.save()
+
+        return order

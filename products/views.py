@@ -9,7 +9,6 @@ from rest_framework.generics import ListAPIView
 from rest_framework.filters import SearchFilter
 from django_filters.rest_framework import DjangoFilterBackend
 
-
 class CartView(APIView):
     def get(self, request, *args, **kwargs):
         cart, created = Cart.objects.get_or_create(user=request.user)
@@ -39,8 +38,6 @@ class CartView(APIView):
         cart_item.delete()
         return Response({'message': 'Item removed from cart'}, status=status.HTTP_200_OK)
     
-
-
 class ProductListAndFilterAPIView(ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductViewSerializer
@@ -52,3 +49,5 @@ class ProductListAndFilterAPIView(ListAPIView):
         'stock_quantity': ['gte', 'lte'],  
     }
     search_fields = ['name', 'description']
+    
+    
