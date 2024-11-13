@@ -130,7 +130,6 @@ client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_S
 @api_view(['POST'])
 def create_order(request):
     amount = 50000
-    
     order = client.order.create(dict(
         amount=amount, 
         currency='INR', 
