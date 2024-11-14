@@ -58,7 +58,6 @@ class CartItem(models.Model):
     def get_total_price(self):
         return self.quantity * self.product.price
     
-
 class Order(models.Model):
     STATUS_CHOICES = [
         ('PENDING', 'Pending'),
@@ -67,22 +66,61 @@ class Order(models.Model):
         ('DELIVERED', 'Delivered'),
         ('CANCELLED', 'Cancelled'),
     ]
+    PAYMENT_METHOD_CHOICES = [
+        ('razorpay', 'Razorpay'),
+        ('cod', 'Cash on Delivery'),
+        # ('stripe', 'Stripe'),
+    ]
     user = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='orders')
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    order_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    razorpay_order_id = models.CharField(max_length=255, blank=True, null=True)
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='razorpay')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Order {self.id} - {self.user.username}"
-    
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2, editable=False, default=0.00)
+
+    def save(self, *args, **kwargs):
+        self.subtotal = self.quantity * self.price
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.product.name} - {self.quantity} pcs"
+
+class Payment(models.Model):
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='payment')
+    payment_id = models.CharField(max_length=100)
+    payment_status = models.CharField(max_length=50)
+    paid_at = models.DateTimeField()
+
+    class Meta:
+        db_table = 'payment'
+
+    def __str__(self):
+        return f"Payment for Order {self.order.id}"
+    
+    
+    # req
+    
+    # product_id
+    # product_price
+    # qty
+    # payment_method
+    
+    # table 
+    
+    # user_id
+    # product_id
+    # qty 
+    # total_price
+    # payment_method
+    # status 
+    
