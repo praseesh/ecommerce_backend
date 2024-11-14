@@ -12,6 +12,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,generics
 from .models import OTPVerification, UserData,TemporaryUserRegistration
+from products.models import Order
 from .serializers import OTPRequestSerializer, OTPVerifySerializer,UserDataSerializer, PostViewSerializer, UserLoginSerializer, UserProfileSerializer, UserViewSerializer
 from .utils import generate_otp
 from .tasks import send_mail_otp_task, send_sms_otp_task
@@ -128,32 +129,57 @@ client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_S
 
 @api_view(['POST'])
 def create_order(request):
-    amount = 50000
-    order = client.order.create(dict(
-        amount=amount, 
-        currency='INR', 
-        payment_capture='1'  
-    ))
-    return JsonResponse({
-        'order_id': order['id'],
-        'amount': amount,
-        'razorpay_key': settings.RAZORPAY_KEY_ID 
-    })
+    user = request.user
+    try:
+        # Fetch the total price from the last created order
+        order = Order.objects.filter(user=user, status='Pending').latest('created_at')
+        total_price = order.total_price  # Ensure you fetch this dynamically
+        razorpay_order = client.order.create(dict(
+            amount=int(total_price * 100), 
+            currency='INR',
+            payment_capture='1'
+        ))
 
+        order.razorpay_order_id = razorpay_order['id']
+        order.save()
+
+        return Response({
+            'order_id': razorpay_order['id'],
+            'amount': total_price,
+            'razorpay_key': settings.RAZORPAY_KEY_ID,
+            'currency': 'INR'
+        })
+
+    except Order.DoesNotExist:
+        return Response({'error': 'No pending orders found for the user.'}, status=400)
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)
+    
+    
 @api_view(['POST'])
 def verify_payment(request):
-    payment_id = request.data.get('razorpay_payment_id')
-    order_id = request.data.get('razorpay_order_id')
-    signature = request.data.get('razorpay_signature')
-
-    params_dict = {
-        'razorpay_order_id': order_id,
-        'razorpay_payment_id': payment_id,
-        'razorpay_signature': signature
-    }
-
     try:
-        client.utility.verify_payment_signature(params_dict)
-        return JsonResponse({'status': 'success'})
+        razorpay_payment_id = request.data.get('razorpay_payment_id')
+        razorpay_order_id = request.data.get('razorpay_order_id')
+        razorpay_signature = request.data.get('razorpay_signature')
+
+        # Verify Razorpay signature
+        client.utility.verify_payment_signature({
+            'razorpay_payment_id': razorpay_payment_id,
+            'razorpay_order_id': razorpay_order_id,
+            'razorpay_signature': razorpay_signature
+        })
+
+        # Mark the order as completed
+        order = Order.objects.get(razorpay_order_id=razorpay_order_id)
+        order.status = 'Completed'
+        order.save()
+
+        return Response({'status': 'Payment verified successfully!'})
+
     except razorpay.errors.SignatureVerificationError:
-        return JsonResponse({'status': 'failure'}, status=400)
+        return Response({'error': 'Payment verification failed.'}, status=400)
+    except Order.DoesNotExist:
+        return Response({'error': 'Order not found.'}, status=404)
+    except Exception as e:
+        return Response({'error': str(e)}, status=500)

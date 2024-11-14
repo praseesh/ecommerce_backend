@@ -104,7 +104,7 @@ class CartItemSerializer(serializers.ModelSerializer):
         model = CartItem
         fields = ['product', 'quantity']
         
-    def validate_quantity(value):
+    def validate_quantity(self,value):
         if value > 5:
             raise serializers.ValidationError("Only 5 items can be added for each product.")
         return value
