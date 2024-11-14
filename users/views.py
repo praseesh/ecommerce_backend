@@ -139,3 +139,24 @@ def create_order(request):
         'amount': amount,
         'razorpay_key': settings.RAZORPAY_KEY_ID 
     })
+
+@api_view(['POST'])
+def verify_payment(request):
+    payment_id = request.data.get('razorpay_payment_id')
+    order_id = request.data.get('razorpay_order_id')
+    signature = request.data.get('razorpay_signature')
+
+    params_dict = {
+        'razorpay_order_id': order_id,
+        'razorpay_payment_id': payment_id,
+        'razorpay_signature': signature
+    }
+
+    try:
+        # Verify the signature with Razorpay
+        client.utility.verify_payment_signature(params_dict)
+        # Payment is valid, mark the order as paid or update the order status
+        return JsonResponse({'status': 'success'})
+    except razorpay.errors.SignatureVerificationError:
+        # Handle invalid payment
+        return JsonResponse({'status': 'failure'}, status=400)
