@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Cart, CartItem, Product
+from .models import Cart, CartItem, Order, Product
 from .serializers import CartSerializer, CartItemSerializer, OrderSerializer, ProductViewSerializer
 from django.shortcuts import get_object_or_404
 from users.models import UserData
@@ -38,23 +38,24 @@ class CartView(APIView):
         cart_item.delete()
         return Response({'message': 'Item removed from cart'}, status=status.HTTP_200_OK)
     
-class ProductListAndFilterAPIView(ListAPIView):
-    queryset = Product.objects.all()
-    serializer_class = ProductViewSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter]
+# class ProductListAndFilterAPIView(ListAPIView):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductViewSerializer
+#     filter_backends = [DjangoFilterBackend, SearchFilter]
 
-    filterset_fields = {
-        'category': ['exact'],   
-        'price': ['gte', 'lte'], 
-        'stock_quantity': ['gte', 'lte'],  
-    }
-    search_fields = ['name', 'description']
+#     filterset_fields = {
+#         'category': ['exact'],   
+#         'price': ['gte', 'lte'], 
+#         'stock_quantity': ['gte', 'lte'],  
+#     }
+#     search_fields = ['name', 'description']
     
     
-class CheckoutAPIView(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = OrderSerializer(data=request.data, context={'request': request})  
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# class CheckoutAPIView(APIView):
+#     def post(self, request, *args, **kwargs):
+#         serializer = OrderSerializer(data=request.data, context={'request': request})  
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+

@@ -127,59 +127,21 @@ class UserDashboard(generics.ListAPIView):
 
 client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
-@api_view(['POST'])
-def create_order(request):
-    user = request.user
-    try:
-        # Fetch the total price from the last created order
-        order = Order.objects.filter(user=user, status='Pending').latest('created_at')
-        total_price = order.total_price  # Ensure you fetch this dynamically
-        razorpay_order = client.order.create(dict(
-            amount=int(total_price * 100), 
-            currency='INR',
-            payment_capture='1'
-        ))
+class CreateRazorpayOrderView(APIView):
+    def post(self, request, *args, **kwargs):
+        order_id = request.data.get('order_id')
+        try:
+            order = Order.objects.get(id=order_id, payment_method='razorpay')
+        except Order.DoesNotExist:
+            return Response({'error': 'Invalid order ID or payment method.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        order.razorpay_order_id = razorpay_order['id']
-        order.save()
-
+        razorpay_order = client.order.create({
+            'amount': int(order.total_price * 100),  
+            'currency': 'INR',
+            'receipt': f"order_{order.id}"
+        })
         return Response({
-            'order_id': razorpay_order['id'],
-            'amount': total_price,
-            'razorpay_key': settings.RAZORPAY_KEY_ID,
-            'currency': 'INR'
-        })
-
-    except Order.DoesNotExist:
-        return Response({'error': 'No pending orders found for the user.'}, status=400)
-    except Exception as e:
-        return Response({'error': str(e)}, status=500)
-    
-    
-@api_view(['POST'])
-def verify_payment(request):
-    try:
-        razorpay_payment_id = request.data.get('razorpay_payment_id')
-        razorpay_order_id = request.data.get('razorpay_order_id')
-        razorpay_signature = request.data.get('razorpay_signature')
-
-        # Verify Razorpay signature
-        client.utility.verify_payment_signature({
-            'razorpay_payment_id': razorpay_payment_id,
-            'razorpay_order_id': razorpay_order_id,
-            'razorpay_signature': razorpay_signature
-        })
-
-        # Mark the order as completed
-        order = Order.objects.get(razorpay_order_id=razorpay_order_id)
-        order.status = 'Completed'
-        order.save()
-
-        return Response({'status': 'Payment verified successfully!'})
-
-    except razorpay.errors.SignatureVerificationError:
-        return Response({'error': 'Payment verification failed.'}, status=400)
-    except Order.DoesNotExist:
-        return Response({'error': 'Order not found.'}, status=404)
-    except Exception as e:
-        return Response({'error': str(e)}, status=500)
+            'razorpay_order_id': razorpay_order['id'],
+            'razorpay_key_id': settings.RAZORPAY_KEY_ID,
+            'amount': order.total_price
+        }, status=status.HTTP_200_OK)
