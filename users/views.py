@@ -153,10 +153,7 @@ def verify_payment(request):
     }
 
     try:
-        # Verify the signature with Razorpay
         client.utility.verify_payment_signature(params_dict)
-        # Payment is valid, mark the order as paid or update the order status
         return JsonResponse({'status': 'success'})
     except razorpay.errors.SignatureVerificationError:
-        # Handle invalid payment
         return JsonResponse({'status': 'failure'}, status=400)
