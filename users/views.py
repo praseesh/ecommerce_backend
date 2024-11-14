@@ -1,7 +1,7 @@
 from django.core.mail import send_mail
 from admin_panel.pagination import AdminUserPagination
 from products.models import Product
-from products.serializers import ProductViewSerializer
+from products.serializers import OrderItemSerializer, OrderSerializer, ProductViewSerializer
 from .models import OTPVerification, Posts
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -145,3 +145,36 @@ class CreateRazorpayOrderView(APIView):
             'razorpay_key_id': settings.RAZORPAY_KEY_ID,
             'amount': order.total_price
         }, status=status.HTTP_200_OK)
+        
+class OrderCreateView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = OrderSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        order = serializer.save(user=request.user)
+
+        items_data = request.data.get('items', [])
+        for item_data in items_data:
+            item_data['order'] = order.id
+            item_serializer = OrderItemSerializer(data=item_data)
+            item_serializer.is_valid(raise_exception=True)
+            item_serializer.save()
+
+        return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
+    
+class UpdatePaymentStatusView(APIView):
+    def post(self, request, *args, **kwargs):
+        order_id = request.data.get('order_id')
+        payment_status = request.data.get('payment_status')
+
+        try:
+            order = Order.objects.get(id=order_id)
+            order.payment.payment_status = payment_status
+            order.payment.save()
+
+            if payment_status == 'success':
+                order.order_status = 'PAID'
+                order.save()
+
+            return Response({'message': 'Payment status updated.'}, status=status.HTTP_200_OK)
+        except Order.DoesNotExist:
+            return Response({'error': 'Order not found.'}, status=status.HTTP_400_BAD_REQUEST)
