@@ -113,19 +113,8 @@ class CartItemSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Only 5 items can be added for each product.")
         return value
 
-# class CartSerializer(serializers.ModelSerializer):
-#     items = CartItemSerializer(many=True)
-    
-#     class Meta:
-#         model = Cart
-#         fields = ['id', 'user', 'items', 'created_at', 'updated_at']
      
 """                                             O R D E R                                                         """
-
-# class OrderItemSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = OrderItem
-#         fields = ['id', 'product', 'quantity', 'price', 'subtotal']
         
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -135,9 +124,9 @@ class PaymentSerializer(serializers.ModelSerializer):
 class OrderSerializer(serializers.Serializer):
     is_cart = serializers.BooleanField(required=False, default=False)
     product_id = serializers.IntegerField(required=False, allow_null=True)
-    address_id = serializers.IntegerField(required=True)  # Mandatory
+    address_id = serializers.IntegerField(required=True)  
     product_price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True)
-    qty = serializers.IntegerField(required=True, min_value=1, max_value=5)  # Must be between 1 and 5
+    qty = serializers.IntegerField(required=True, min_value=1, max_value=5) 
     payment_method = serializers.ChoiceField(choices=['razorpay', 'cod', 'paypal'])
 
     class Meta:

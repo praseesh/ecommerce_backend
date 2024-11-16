@@ -161,18 +161,13 @@ class OrderCreateView(APIView):
         if is_cart:
             try:
                 with transaction.atomic():
-                    # Fetch the cart items for the user
                     cart_items = Cart.objects.filter(user=request.user, is_purchased=False)
                     order_items = []
                     total_price = 0
-                    
-                    # Prepare the order data
                     for cart_item in cart_items:
                         product = cart_item.product
                         item_total_price = product.price * cart_item.quantity if product.price else 0
                         total_price += item_total_price
-
-                        # Create an Order instance for each cart item
                         order = Order(
                             user=request.user,
                             address_id=address_id,
@@ -182,12 +177,9 @@ class OrderCreateView(APIView):
                             total_price=item_total_price,
                             payment_method=payment_method
                         )
-                        order_items.append(order)  # Add the order instance to the list
+                        order_items.append(order) 
                     
-                    # Perform bulk creation of orders
                     Order.objects.bulk_create(order_items)
-
-                    # Mark cart items as purchased (if needed)
                     cart_items.update(is_purchased=True)
 
                     return Response({"message": "Order created successfully."}, status=status.HTTP_201_CREATED)
@@ -195,12 +187,12 @@ class OrderCreateView(APIView):
             except Exception as e:
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         if not is_cart:
-            product_id = serializer.validated_data.get('product_id')  # Fetch 'product_id' instead of 'product'
+            product_id = serializer.validated_data.get('product_id')  
             try:
                 product = Product.objects.get(id=product_id)
             except Product.DoesNotExist:
                 return Response({'error': 'Given product Not exist'}, status=status.HTTP_404_NOT_FOUND)
-            quantity = serializer.validated_data.get('qty', 1)  # Default quantity to 1 if not provided
+            quantity = serializer.validated_data.get('qty', 1)  
             total_price = product.price * quantity if product.price else 0
             order_items = []
             order = Order(
@@ -213,30 +205,8 @@ class OrderCreateView(APIView):
                 payment_method=payment_method
             )
             order_items.append(order)
-            Order.objects.bulk_create(order_items)  # bulk_create instead of create for multiple orders
+            Order.objects.bulk_create(order_items) 
             return Response({"message": "Order created successfully."}, status=status.HTTP_201_CREATED)
-        # total_price = product_price*qty if product_price and qty else 0
-        
-    #     if not serializer.is_valid():
-    #         return Response(None,status=status.HTTP_400_BAD_REQUEST)
-        
-    
-            # address_id = serializer.validated_data.get('address_id')
-            # carts = Cart.objects.filter(is_purchased=False,user=request.user.id)
-            # for cart in carts:
-            #     product_id = cart.product.id
-            #     product_price = cart.product.
-    
-            # Fetch all user cart data with is_purchased = false,
-            # Use for loop for each cart value and place order for all , product stock --
-
-            # check the qty is 0<qty && 5>=qty
-    # pass
-        
-        # if case is fialed that means he is trying to place order without using cart, extract all other fields from serielizer example  product_id,user_id all those field, And validate the stock , after that create a order with the all required fields , make product stock --
-
-        
-        # return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
     
 class UpdatePaymentStatusView(APIView):
     def post(self, request, *args, **kwargs):
