@@ -86,4 +86,19 @@ class Posts(models.Model):
 
     def __str__(self):
         return self.title
+
+class Address(models.Model):
+    user = models.ForeignKey(UserData,on_delete=models.CASCADE)
+    house =models.CharField(max_length=255)
+    area =models.CharField(max_length=255)
+    city = models.CharField(max_length=255)
+    pin_code = models.CharField(max_length=255)
+    created_at = models.DateTimeField(default=timezone.now)
+    updated_at = models.DateTimeField(auto_now=True)
     
+    class Meta:
+        db_table = 'address'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.user

@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from .models import Cart, CartItem, Payment, Product, Category,OrderItem, Order
+from rest_framework.exceptions import ValidationError
+from users.models import Address
+from .models import Cart, CartItem, Payment, Product, Category, Order
 
 
 class ProductCreationSerializer(serializers.ModelSerializer):
@@ -118,34 +120,47 @@ class CartSerializer(serializers.ModelSerializer):
      
 """                                             O R D E R                                                         """
 
-class OrderItemSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = OrderItem
-        fields = ['id', 'product', 'quantity', 'price', 'subtotal']
+# class OrderItemSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = OrderItem
+#         fields = ['id', 'product', 'quantity', 'price', 'subtotal']
         
 class PaymentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Payment
         fields = ['payment_id', 'payment_status', 'paid_at']
 
-class OrderSerializer(serializers.ModelSerializer):
-    items = OrderItemSerializer(many=True, read_only=True)
-    payment = PaymentSerializer(read_only=True)
+class OrderSerializer(serializers.Serializer):
+    is_cart = serializers.BooleanField(required=False, default=False)
+    product_id = serializers.IntegerField(required=False, allow_null=True)
+    address_id = serializers.IntegerField(required=True)  # Mandatory
+    product_price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True)
+    qty = serializers.IntegerField(required=True, min_value=1, max_value=5)  # Must be between 1 and 5
+    payment_method = serializers.ChoiceField(
+        choices=['razorpay', 'cod', 'paypal'], 
+        required=False  # Payment method is now optional
+    )
 
     class Meta:
         model = Order
-        fields = ['id', 'user', 'order_status', 'total_price', 'payment_method', 
-                  'created_at', 'updated_at', 'items', 'payment']
-
-
-
-
-
-
-
-
-
-
+        fields = [
+            'id', 'user', 'order_status', 'total_price', 'payment_method', 
+            'created_at', 'updated_at', 'items', 'payment', 'is_cart',
+            'product_id', 'address_id', 'product_price', 'qty'
+        ]
+    
+    def validate(self, data):
+        """
+        Custom validation for the serializer.
+        """
+        # Example: Ensure that product_price is provided if product_id is present
+        if data.get('product_id') is not None and data.get('product_price') is None:
+            raise serializers.ValidationError("Product price is required when product ID is provided.")
+        return data
+    def validate_address(self, value):
+        if not Address.objects.filter(id=value.id).exists():
+            raise ValidationError("The provided address does not exist.")
+        return value
 
 
 

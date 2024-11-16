@@ -1,5 +1,7 @@
+from django.conf import settings
 from django.db import models
-from users.models import UserData
+from users.models import UserData,Address
+from decimal import Decimal
 
 """                                                  PRODUCT                                                  """    
 
@@ -39,6 +41,7 @@ class Product(models.Model):
 
 class Cart(models.Model):
     user = models.OneToOneField(UserData, on_delete=models.CASCADE, related_name='cart')
+    is_purchased = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
@@ -69,31 +72,46 @@ class Order(models.Model):
     PAYMENT_METHOD_CHOICES = [
         ('razorpay', 'Razorpay'),
         ('cod', 'Cash on Delivery'),
-        # ('stripe', 'Stripe'),
+        ('paypal', 'PayPal'),
     ]
+
     user = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='orders')
+    address= models.ForeignKey(Address,on_delete=models.CASCADE, default=1)  # Assuming address is an integer ID from another table
+    product= models.ForeignKey(Product,on_delete=models.CASCADE,default=1)  # Product ID is optional for cart-like orders
     order_status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
-    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
-    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, default='razorpay')
+    total_price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'))
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_METHOD_CHOICES, null=True, blank=True)
+
+    product_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)  # Optional
+    qty = models.PositiveIntegerField(null=True, blank=True, default=1)  # Optional, defaults to 1
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    is_paid = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"Order {self.id} - {self.user.username}"
+        return f"Order {self.id} - {self.user.username} - {self.order_status}"
 
-class OrderItem(models.Model):
-    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField()
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2, editable=False, default=0.00)
+    def calculate_total_price(self):
+        """
+        Calculate total price dynamically if product_price and qty are available.
+        """
+        if self.product_price and self.qty:
+            return self.product_price * self.qty
+        return self.total_price
 
-    def save(self, *args, **kwargs):
-        self.subtotal = self.quantity * self.price
-        super().save(*args, **kwargs)
+# class OrderItem(models.Model):
+#     order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')
+#     product = models.ForeignKey(Product, on_delete=models.CASCADE)
+#     quantity = models.PositiveIntegerField()
+#     price = models.DecimalField(max_digits=10, decimal_places=2)
+#     subtotal = models.DecimalField(max_digits=10, decimal_places=2, editable=False, default=0.00)
 
-    def __str__(self):
-        return f"{self.product.name} - {self.quantity} pcs"
+#     def save(self, *args, **kwargs):
+#         self.subtotal = self.quantity * self.price
+#         super().save(*args, **kwargs)
+
+#     def __str__(self):
+#         return f"{self.product.name} - {self.quantity} pcs"
 
 class Payment(models.Model):
     order = models.OneToOneField(Order, on_delete=models.CASCADE, related_name='payment')

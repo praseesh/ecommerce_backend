@@ -1,7 +1,7 @@
 from django.core.mail import send_mail
 from admin_panel.pagination import AdminUserPagination
-from products.models import Product
-from products.serializers import OrderItemSerializer, OrderSerializer, ProductViewSerializer
+from products.models import Cart, Product
+from products.serializers import  OrderSerializer, ProductViewSerializer
 from .models import OTPVerification, Posts
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -149,16 +149,27 @@ class CreateRazorpayOrderView(APIView):
 class OrderCreateView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = OrderSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        order = serializer.save(user=request.user)
+        
+        if not serializer.is_valid():
+            return Response(None,status=status.HTTP_400_BAD_REQUEST)
+        
+        is_cart = serializer.get('is_cart')
+        if is_cart:
+            address_id = serializer.validated_data.get('address_id')
+            carts = Cart.objects.filter(is_purchased=False,user=request.user.id)
+            for cart in carts:
+                product_id = cart.product.id
+                
+                
+            # Fetch all user cart data with is_purchased = false,
+            # Use for loop for each cart value and place order for all , product stock --
+            
+            # check the qty is 0<qty && 5>=qty
+            pass
+        
+        # if case is fialed that means he is trying to place order without using cart, extract all other fields from serielizer example  product_id,user_id all those field, And validate the stock , after that create a order with the all required fields , make product stock --
 
-        items_data = request.data.get('items', [])
-        for item_data in items_data:
-            item_data['order'] = order.id
-            item_serializer = OrderItemSerializer(data=item_data)
-            item_serializer.is_valid(raise_exception=True)
-            item_serializer.save()
-
+        
         return Response(OrderSerializer(order).data, status=status.HTTP_201_CREATED)
     
 class UpdatePaymentStatusView(APIView):
@@ -178,3 +189,25 @@ class UpdatePaymentStatusView(APIView):
             return Response({'message': 'Payment status updated.'}, status=status.HTTP_200_OK)
         except Order.DoesNotExist:
             return Response({'error': 'Order not found.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+    # req
+    
+    
+    # product_id - 
+    # address_id- Required
+    # product_price - price of the product
+    # qty - qty>=1 && qty<=5
+    # payment_method = choices ['razorpay','cod','paypal']
+    
+    # table 
+    
+    # user_id
+    # product_id
+    # address_id
+    # qty 
+    # total_price
+    # payment_method
+    # status 
+    
+    
+    # On user Side Need table called address := user_id field is required, User can able to DO CRUD operation on that table
