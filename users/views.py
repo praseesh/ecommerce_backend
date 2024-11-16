@@ -22,6 +22,8 @@ import razorpay
 from django.conf import settings
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
+from django.db import transaction
+
 
 class UserRegistrationViews(APIView):
     def post(self, request, *args, **kwargs):
@@ -149,15 +151,57 @@ class CreateRazorpayOrderView(APIView):
 class OrderCreateView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = OrderSerializer(data=request.data)
-        product_id = serializer.validated_data['product_id']
-        address_id = serializer.validated_data['address_id']
+        if not serializer.is_valid():
+            return Response({"error": "Serializer is not valid"}, status=status.HTTP_400_BAD_REQUEST)
+
+        address_id = serializer.validated_data.get('address_id')
+        payment_method = serializer.validated_data.get('payment_method')
+        is_cart = serializer.validated_data.get('is_cart')
+
+        if is_cart:
+            try:
+                with transaction.atomic():
+                    # Fetch the cart items for the user
+                    cart_items = Cart.objects.filter(user=request.user, is_purchased=False)
+                    order_items = []
+                    total_price = 0
+                    
+                    # Prepare the order data
+                    for cart_item in cart_items:
+                        product = cart_item.product
+                        item_total_price = product.price * cart_item.quantity if product.price else 0
+                        total_price += item_total_price
+
+                        # Create an Order instance for each cart item
+                        order = Order(
+                            user=request.user,
+                            address_id=address_id,
+                            product=product,
+                            quantity=cart_item.quantity,
+                            product_price=product.price,
+                            total_price=item_total_price,
+                            payment_method=payment_method
+                        )
+                        order_items.append(order)  # Add the order instance to the list
+                    
+                    # Perform bulk creation of orders
+                    Order.objects.bulk_create(order_items)
+
+                    # Mark cart items as purchased (if needed)
+                    cart_items.update(is_purchased=True)
+
+                    return Response({"message": "Order created successfully."}, status=status.HTTP_201_CREATED)
+            
+            except Exception as e:
+                return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # total_price = product_price*qty if product_price and qty else 0
         
     #     if not serializer.is_valid():
     #         return Response(None,status=status.HTTP_400_BAD_REQUEST)
         
-        is_cart = serializer.get('is_cart')
-        if is_cart:
-            pass
+    
             # address_id = serializer.validated_data.get('address_id')
             # carts = Cart.objects.filter(is_purchased=False,user=request.user.id)
             # for cart in carts:

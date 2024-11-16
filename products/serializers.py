@@ -137,7 +137,7 @@ class OrderSerializer(serializers.Serializer):
     product_id = serializers.IntegerField(required=False, allow_null=True)
     address_id = serializers.IntegerField(required=True)  # Mandatory
     product_price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True)
-    qty = serializers.IntegerField(required=True, min_value=1, max_value=5)  # Must be between 1 and 5
+    # qty = serializers.IntegerField(required=True, min_value=1, max_value=5)  # Must be between 1 and 5
     payment_method = serializers.ChoiceField(
         choices=['razorpay', 'cod', 'paypal'], 
         required=False  # Payment method is now optional
