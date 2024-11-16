@@ -137,7 +137,7 @@ class OrderSerializer(serializers.Serializer):
     product_id = serializers.IntegerField(required=False, allow_null=True)
     address_id = serializers.IntegerField(required=True)  # Mandatory
     product_price = serializers.DecimalField(max_digits=10, decimal_places=2, required=False, allow_null=True)
-    # qty = serializers.IntegerField(required=True, min_value=1, max_value=5)  # Must be between 1 and 5
+    qty = serializers.IntegerField(required=True, min_value=1, max_value=5)  # Must be between 1 and 5
     payment_method = serializers.ChoiceField(
         choices=['razorpay', 'cod', 'paypal'], 
         required=False  # Payment method is now optional
@@ -150,15 +150,14 @@ class OrderSerializer(serializers.Serializer):
             'created_at', 'updated_at', 'items', 'payment', 'is_cart',
             'product_id', 'address_id', 'product_price', 'qty'
         ]
-    
-    def validate(self, data):
-        """
-        Custom validation for the serializer.
-        """
-        # Example: Ensure that product_price is provided if product_id is present
-        if data.get('product_id') is not None and data.get('product_price') is None:
-            raise serializers.ValidationError("Product price is required when product ID is provided.")
-        return data
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        is_cart = self.initial_data.get('is_cart', False)
+        if is_cart:
+            self.fields['qty'].required = False
+        else:
+            self.fields['qty'].required = True
+            
     def validate_address(self, value):
         if not Address.objects.filter(id=value.id).exists():
             raise ValidationError("The provided address does not exist.")

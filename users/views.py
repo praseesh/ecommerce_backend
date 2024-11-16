@@ -152,7 +152,7 @@ class OrderCreateView(APIView):
     def post(self, request, *args, **kwargs):
         serializer = OrderSerializer(data=request.data)
         if not serializer.is_valid():
-            return Response({"error": "Serializer is not valid"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
         address_id = serializer.validated_data.get('address_id')
         payment_method = serializer.validated_data.get('payment_method')
@@ -177,7 +177,7 @@ class OrderCreateView(APIView):
                             user=request.user,
                             address_id=address_id,
                             product=product,
-                            quantity=cart_item.quantity,
+                            qty=cart_item.quantity,
                             product_price=product.price,
                             total_price=item_total_price,
                             payment_method=payment_method
@@ -194,8 +194,27 @@ class OrderCreateView(APIView):
             
             except Exception as e:
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        if not is_cart:
+            product_id = serializer.validated_data.get('product_id')  # Fetch 'product_id' instead of 'product'
+            try:
+                product = Product.objects.get(id=product_id)
+            except Product.DoesNotExist:
+                return Response({'error': 'Given product Not exist'}, status=status.HTTP_404_NOT_FOUND)
+            quantity = serializer.validated_data.get('qty', 1)  # Default quantity to 1 if not provided
+            total_price = product.price * quantity if product.price else 0
+            order_items = []
+            order = Order(
+                user=request.user,
+                address_id=address_id,
+                product=product,
+                product_price=product.price,
+                qty = quantity,
+                total_price=total_price,
+                payment_method=payment_method
+            )
+            order_items.append(order)
+            Order.objects.bulk_create(order_items)  # bulk_create instead of create for multiple orders
+            return Response({"message": "Order created successfully."}, status=status.HTTP_201_CREATED)
         # total_price = product_price*qty if product_price and qty else 0
         
     #     if not serializer.is_valid():
