@@ -147,25 +147,28 @@ class CreateRazorpayOrderView(APIView):
         }, status=status.HTTP_200_OK)
         
 class OrderCreateView(APIView):
-    # def post(self, request, *args, **kwargs):
-    #     serializer = OrderSerializer(data=request.data)
+    def post(self, request, *args, **kwargs):
+        serializer = OrderSerializer(data=request.data)
+        product_id = serializer.validated_data['product_id']
+        address_id = serializer.validated_data['address_id']
         
     #     if not serializer.is_valid():
     #         return Response(None,status=status.HTTP_400_BAD_REQUEST)
         
-    #     is_cart = serializer.get('is_cart')
-    #     if is_cart:
-    #         address_id = serializer.validated_data.get('address_id')
-    #         carts = Cart.objects.filter(is_purchased=False,user=request.user.id)
-    #         for cart in carts:
-    #             product_id = cart.product.id
-    #             product_price = cart.product.
+        is_cart = serializer.get('is_cart')
+        if is_cart:
+            pass
+            # address_id = serializer.validated_data.get('address_id')
+            # carts = Cart.objects.filter(is_purchased=False,user=request.user.id)
+            # for cart in carts:
+            #     product_id = cart.product.id
+            #     product_price = cart.product.
     
             # Fetch all user cart data with is_purchased = false,
             # Use for loop for each cart value and place order for all , product stock --
 
             # check the qty is 0<qty && 5>=qty
-    pass
+    # pass
         
         # if case is fialed that means he is trying to place order without using cart, extract all other fields from serielizer example  product_id,user_id all those field, And validate the stock , after that create a order with the all required fields , make product stock --
 

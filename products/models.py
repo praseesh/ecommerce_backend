@@ -40,7 +40,7 @@ class Product(models.Model):
 """                                                  CART                                                  """    
 
 class Cart(models.Model):
-    user = models.OneToOneField(UserData, on_delete=models.CASCADE, related_name='cart')
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE, related_name='cart')
     is_purchased = models.BooleanField(default=False)
     product = models.ForeignKey(Product, on_delete=models.CASCADE, default=1)
     quantity = models.PositiveIntegerField(default=1)
