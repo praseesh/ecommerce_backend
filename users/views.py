@@ -245,5 +245,3 @@ class UpdatePaymentStatusView(APIView):
     # payment_method
     # status 
     
-    
-    # On user Side Need table called address := user_id field is required, User can able to DO CRUD operation on that table
