@@ -42,6 +42,8 @@ class Product(models.Model):
 class Cart(models.Model):
     user = models.OneToOneField(UserData, on_delete=models.CASCADE, related_name='cart')
     is_purchased = models.BooleanField(default=False)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, default=1)
+    quantity = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     class Meta:
@@ -49,17 +51,16 @@ class Cart(models.Model):
     def __str__(self):
         return f"{self.user.username}'s Cart"
 
-class CartItem(models.Model):
-    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
-    product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(default=1)
-    class Meta:
-        db_table = 'cart_item'
-    def __str__(self):
-        return f"{self.quantity} of {self.product.name}"
+# class CartItem(models.Model):
+#     cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
 
-    def get_total_price(self):
-        return self.quantity * self.product.price
+#     class Meta:
+#         db_table = 'cart_item'
+#     def __str__(self):
+#         return f"{self.quantity} of {self.product.name}"
+
+#     def get_total_price(self):
+#         return self.quantity * self.product.price
     
 class Order(models.Model):
     STATUS_CHOICES = [

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from users.models import Address
-from .models import Cart, CartItem, Payment, Product, Category, Order
+from .models import Cart, Payment, Product, Category, Order
 
 
 class ProductCreationSerializer(serializers.ModelSerializer):
@@ -100,23 +100,25 @@ class ProductUpdationSerializer(serializers.ModelSerializer):
 """                                             C A R T                                                         """
 
 class CartItemSerializer(serializers.ModelSerializer):
-    product = serializers.PrimaryKeyRelatedField(queryset=Product.objects.all())
-    
     class Meta:
-        model = CartItem
-        fields = ['product', 'quantity']
-        
-    def validate_quantity(self,value):
+        model = Cart
+        fields = ['id', 'user', 'is_purchased', 'product', 'quantity', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'created_at', 'updated_at']  
+
+    def validate_quantity(self, value):
+        """
+        Validate the quantity field to ensure no more than 5 items are added.
+        """
         if value > 5:
             raise serializers.ValidationError("Only 5 items can be added for each product.")
         return value
 
-class CartSerializer(serializers.ModelSerializer):
-    items = CartItemSerializer(many=True)
+# class CartSerializer(serializers.ModelSerializer):
+#     items = CartItemSerializer(many=True)
     
-    class Meta:
-        model = Cart
-        fields = ['id', 'user', 'items', 'created_at', 'updated_at']
+#     class Meta:
+#         model = Cart
+#         fields = ['id', 'user', 'items', 'created_at', 'updated_at']
      
 """                                             O R D E R                                                         """
 
