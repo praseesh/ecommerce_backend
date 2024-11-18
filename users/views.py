@@ -226,22 +226,20 @@ class UpdatePaymentStatusView(APIView):
         except Order.DoesNotExist:
             return Response({'error': 'Order not found.'}, status=status.HTTP_400_BAD_REQUEST)
         
-    # req
-    
-    
-    # product_id - 
-    # address_id- Required
-    # product_price - price of the product
-    # qty - qty>=1 && qty<=5
-    # payment_method = choices ['razorpay','cod','paypal']
-    
-    # table 
-    
-    # user_id
-    # product_id
-    # address_id
-    # qty 
-    # total_price
-    # payment_method
-    # status 
-    
+from django.db.models import Sum
+
+class UnpaidOrdersTotalView(APIView):
+    def get(self, request, *args, **kwargs):
+        user = request.user  
+        unpaid_orders = Order.objects.filter(user=user, is_paid=False)
+
+        order_details = unpaid_orders.values('product_id', 'qty', 'total_price')
+        total_amount = unpaid_orders.aggregate(total_amount_to_pay=Sum('total_price'))['total_amount_to_pay']
+        
+        if total_amount is None:
+            total_amount = 0  
+
+        return Response({
+            "total_amount_to_pay": total_amount,
+            "order_details": list(order_details)
+        }, status=status.HTTP_200_OK)

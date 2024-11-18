@@ -6,7 +6,7 @@ from .views import (
     UserRegistrationViews, VerifyOTPView, LoginView,
     RegisteredUserListView, UserProfileView, CreateProfileView,
     UserDashboard, CreateRazorpayOrderView,UpdatePaymentStatusView,
-    OrderCreateView, 
+    OrderCreateView, UnpaidOrdersTotalView
 )
 
 urlpatterns = [
@@ -20,6 +20,7 @@ urlpatterns = [
     path('orders/create/', OrderCreateView.as_view(), name='order-create'),
     path('payment/razorpay/create/', CreateRazorpayOrderView.as_view(), name='razorpay-order-create'),
     path('payment/status/update/', UpdatePaymentStatusView.as_view(), name='payment-status-update'),
+    path('unpaid/order/',UnpaidOrdersTotalView.as_view(), name='unpaid-order'),
     
     
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
