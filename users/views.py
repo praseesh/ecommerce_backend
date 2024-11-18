@@ -158,6 +158,30 @@ class CreateRazorPayPaymentPage(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+class VerifyPaymentView(APIView):
+    def post(self,request,*args, **kwargs):
+        razorpay_payment_id = request.data.get('razorpay_payment_id')
+        razorpay_order_id = request.data.get('razorpay_order_id')
+        razorpay_signature = request.data.get('razorpay_signature')
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        try:
+            print("::::::::")
+            client.utility.verify_payment_signature({
+                "razorpay_order_id": razorpay_order_id,
+                "razorpay_payment_id": razorpay_payment_id,
+                "razorpay_signature": razorpay_signature
+            })
+            print("::::::::")
+            
+            print(f"razorpay_order_id: {razorpay_order_id} \nrazorpay_payment_id: {razorpay_payment_id} \nrazorpay_signature: {razorpay_signature}")
+            user_payment = UserPayment.objects.get(razorpay_order_id=razorpay_order_id)
+            user_payment.is_paid = True
+            user_payment.save()
+            Order.objects.filter(user=user_payment.user, is_paid=False).update(is_paid=True, order_status="PAID")
+            return Response({"message": "Payment verified and order completed."}, status=status.HTTP_200_OK)
+        except razorpay.errors.SignatureVerificationError as e:
+            return Response({"error": "Payment verification failed."}, status=status.HTTP_400_BAD_REQUEST)
+        
 """                                            O R D E R                                                      """
         
 class OrderCreateView(APIView):
@@ -165,11 +189,9 @@ class OrderCreateView(APIView):
         serializer = OrderSerializer(data=request.data)
         if not serializer.is_valid():
             return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-
         address_id = serializer.validated_data.get('address_id')
         payment_method = serializer.validated_data.get('payment_method')
         is_cart = serializer.validated_data.get('is_cart')
-
         if is_cart:
             try:
                 with transaction.atomic():
@@ -190,12 +212,12 @@ class OrderCreateView(APIView):
                             payment_method=payment_method
                         )
                         order_items.append(order) 
-                    
                     Order.objects.bulk_create(order_items)
                     cart_items.update(is_purchased=True)
                     return Response({"message": "Order created successfully."}, status=status.HTTP_201_CREATED)
             except Exception as e:
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            
         if not is_cart:
             product_id = serializer.validated_data.get('product_id')  
             try:
@@ -253,3 +275,5 @@ class UnpaidOrdersTotalView(APIView):
             "total_amount_to_pay": total_amount,
             "order_details": list(order_details)
         }, status=status.HTTP_200_OK)
+        
+
