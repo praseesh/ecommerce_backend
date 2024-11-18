@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from .views import (
     UserRegistrationViews, VerifyOTPView, LoginView,
     RegisteredUserListView, UserProfileView, CreateProfileView,
-    UserDashboard, CreateRazorpayOrderView,UpdatePaymentStatusView,
+    UserDashboard, CreateRazorPayPaymentPage,UpdatePaymentStatusView,
     OrderCreateView, UnpaidOrdersTotalView
 )
 
@@ -18,7 +18,7 @@ urlpatterns = [
     path('create-profile/',CreateProfileView.as_view(), name='create-profile'),
     path('user-dashboard/', UserDashboard.as_view(), name='user-dashboard'),
     path('orders/create/', OrderCreateView.as_view(), name='order-create'),
-    path('payment/razorpay/create/', CreateRazorpayOrderView.as_view(), name='razorpay-order-create'),
+    path('payment/razorpay/create/', CreateRazorPayPaymentPage.as_view(), name='razorpay-order-create'),
     path('payment/status/update/', UpdatePaymentStatusView.as_view(), name='payment-status-update'),
     path('unpaid/order/',UnpaidOrdersTotalView.as_view(), name='unpaid-order'),
     

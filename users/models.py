@@ -102,3 +102,16 @@ class Address(models.Model):
 
     def __str__(self):
         return self.user
+    
+class UserPayment(models.Model):
+    user = models.ForeignKey(UserData, on_delete=models.CASCADE)
+    razorpay_order_id = models.CharField(max_length=100)
+    total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    is_paid = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    class Meta:
+        db_table = 'user_payment'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return self.user

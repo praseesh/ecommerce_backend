@@ -2,7 +2,7 @@ from django.core.mail import send_mail
 from admin_panel.pagination import AdminUserPagination
 from products.models import Cart, Product
 from products.serializers import  OrderSerializer, ProductViewSerializer
-from .models import OTPVerification, Posts
+from .models import OTPVerification, Posts, UserPayment
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate
@@ -127,26 +127,38 @@ class UserDashboard(generics.ListAPIView):
 
 """                                         R A Z O R P A Y                                                      """
 
-client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-
-class CreateRazorpayOrderView(APIView):
-    def post(self, request, *args, **kwargs):
-        order_id = request.data.get('order_id')
+class CreateRazorPayPaymentPage(APIView):
+    def post(self,request,*args, **kwargs):
+        user = request.user
+        unpaid_order = Order.objects.filter(user=user, is_paid=False)
+        total_amount = unpaid_order.aggregate(total_amount_to_pay=Sum('total_price'))['total_amount_to_pay']
+        if not total_amount:
+            return Response({'error':'No Unpaid Orders Found'}, status=status.HTTP_404_NOT_FOUND)
+        total_amount_in_paisa = int(total_amount * 100)
+        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
         try:
-            order = Order.objects.get(id=order_id, payment_method='razorpay')
-        except Order.DoesNotExist:
-            return Response({'error': 'Invalid order ID or payment method.'}, status=status.HTTP_400_BAD_REQUEST)
+            razorpay_order = client.order.create({
+                "amount": total_amount_in_paisa,
+                "currency": "INR",
+                "receipt": f"order_recptid_{user.id}",
+                "notes": {"user_id": user.id},
+            })
+            user_payment = UserPayment.objects.create(
+                user=user,
+                razorpay_order_id=razorpay_order['id'],
+                total_amount=total_amount,
+            )
+            return Response({
+                "order_id": razorpay_order['id'],
+                "amount": total_amount,
+                "currency": "INR",
+                "notes": razorpay_order['notes']
+            }, status=status.HTTP_200_OK)
 
-        razorpay_order = client.order.create({
-            'amount': int(order.total_price * 100),  
-            'currency': 'INR',
-            'receipt': f"order_{order.id}"
-        })
-        return Response({
-            'razorpay_order_id': razorpay_order['id'],
-            'razorpay_key_id': settings.RAZORPAY_KEY_ID,
-            'amount': order.total_price
-        }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+"""                                            O R D E R                                                      """
         
 class OrderCreateView(APIView):
     def post(self, request, *args, **kwargs):
@@ -181,9 +193,7 @@ class OrderCreateView(APIView):
                     
                     Order.objects.bulk_create(order_items)
                     cart_items.update(is_purchased=True)
-
                     return Response({"message": "Order created successfully."}, status=status.HTTP_201_CREATED)
-            
             except Exception as e:
                 return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         if not is_cart:
