@@ -163,9 +163,6 @@ class CreateRazorPayPaymentPage(APIView):
         
 from razorpay.errors import SignatureVerificationError
 
-
-        
-
 class VerifyRazorPayPayment(APIView):
     def post(self, request, *args, **kwargs):
         razorpay_payment_id = request.data.get("razorpay_payment_id")
