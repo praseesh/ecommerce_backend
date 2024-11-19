@@ -12,7 +12,7 @@
             "description": "Order Payment",
             "order_id": "{{ order_id }}",  
             "handler": function (response) {
-                
+
                 fetch("{% url 'verify_payment' %}", {  
                     method: "POST",
                     headers: {

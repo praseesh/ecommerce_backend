@@ -163,6 +163,28 @@ class CreateRazorPayPaymentPage(APIView):
         
 from razorpay.errors import SignatureVerificationError
 
+class CashOnDelivery(APIView):
+    def post(self,request,*args, **kwargs):
+        total_price = request.data.get('total_price')
+        user = request.user
+        if not total_price:
+            return Response({'error':'Total Price is Required'}, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            order = Order.objects.create(
+                user = user,
+                total_price = total_price,
+                payment_method = 'cod',
+                is_paid = False
+            )
+            return Response({
+                'success':'Order placed Successfully',
+                'order_id': order.id,
+                "total_price": order.total_price,
+            },status=status.HTTP_201_CREATED)
+        except Exception as e:
+            return Response({'error':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
 class VerifyRazorPayPayment(APIView):
     def post(self, request, *args, **kwargs):
         razorpay_payment_id = request.data.get("razorpay_payment_id")
