@@ -194,13 +194,9 @@ class RazorPayWebhook(APIView):
         signature = request.headers.get('X-Razorpay-Signature')
         client = Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
         try:
-            # Verify webhook signature
             client.utility.verify_webhook_signature(payload, signature, settings.RAZORPAY_WEBHOOK_SECRET)
-
-            # Process the webhook event
             event = json.loads(payload)
             if event["event"] == "payment.captured":
-                # Handle payment capture event
                 pass
             return Response({"success": "Webhook processed."}, status=status.HTTP_200_OK)
         except Exception as e:
