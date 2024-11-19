@@ -1,3 +1,4 @@
+import json
 from django.core.mail import send_mail
 from admin_panel.pagination import AdminUserPagination
 from products.models import Cart, Product
@@ -132,7 +133,7 @@ class UserDashboard(generics.ListAPIView):
 class CreateRazorPayPaymentPage(APIView):
     def post(self,request,*args, **kwargs):
         user = request.user
-        unpaid_order = Order.objects.filter(user=user, is_paid=False)
+        unpaid_order = Order.objects.filter(user=user, is_paid=False, payment_method=razorpay)
         total_amount = unpaid_order.aggregate(total_amount_to_pay=Sum('total_price'))['total_amount_to_pay']
         if not total_amount:
             return Response({'error':'No Unpaid Orders Found'}, status=status.HTTP_404_NOT_FOUND)
@@ -161,47 +162,50 @@ class CreateRazorPayPaymentPage(APIView):
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 from razorpay.errors import SignatureVerificationError
-class VerifyPaymentView(APIView):
+
+class VerifyRazorPayPayment(APIView):
     def post(self, request, *args, **kwargs):
-        print("Request Data:", request.data)
-        print("Request Headers:", request.headers)
-        print("Request Body:", request.body)
         razorpay_payment_id = request.data.get("razorpay_payment_id")
         razorpay_order_id = request.data.get("razorpay_order_id")
         razorpay_signature = request.data.get("razorpay_signature")
-        print("Payment ID:", razorpay_payment_id)
-        print("Order ID:", razorpay_order_id)
-        print("Signature:", razorpay_signature)
-        try:
-            # Initialize the Razorpay client with your credentials
-            client = Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
 
-            # Verify the payment signature
-            data = {
+        client = Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        try:
+            client.utility.verify_payment_signature({
                 "razorpay_order_id": razorpay_order_id,
                 "razorpay_payment_id": razorpay_payment_id,
                 "razorpay_signature": razorpay_signature,
-            }
-
-            # Razorpay signature verification
-            client.utility.verify_payment_signature(data)
-
-            # Update user payment status
+            })
             user_payment = UserPayment.objects.get(razorpay_order_id=razorpay_order_id)
-            user_payment.is_paid = True
+            user_payment.is_verified = True
+            user_payment.payment_id = razorpay_payment_id
             user_payment.save()
 
-            Order.objects.filter(user=user_payment.user, is_paid=False).update(is_paid=True, order_status="PAID")
+            # Mark the order as paid
+            Order.objects.filter(user=user_payment.user, is_paid=False).update(is_paid=True)
 
-            return Response({"message": "Payment verified and order completed."}, status=status.HTTP_200_OK)
-
-        except SignatureVerificationError:
-            return Response({"error": "Payment verification failed."}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"success": "Payment verified and order updated."}, status=status.HTTP_200_OK)
 
         except Exception as e:
-            print(f"Unexpected Error: {str(e)}")
-            return Response({"error": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
+class RazorPayWebhook(APIView):
+    def post(self, request, *args, **kwargs):
+        payload = request.body
+        signature = request.headers.get('X-Razorpay-Signature')
+        client = Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+        try:
+            # Verify webhook signature
+            client.utility.verify_webhook_signature(payload, signature, settings.RAZORPAY_WEBHOOK_SECRET)
+
+            # Process the webhook event
+            event = json.loads(payload)
+            if event["event"] == "payment.captured":
+                # Handle payment capture event
+                pass
+            return Response({"success": "Webhook processed."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 """                                            O R D E R                                                      """
         
 class OrderCreateView(APIView):
