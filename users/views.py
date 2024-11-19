@@ -8,17 +8,19 @@ from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.http import HttpResponse
+from razorpay import Client
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status,generics
 from .models import OTPVerification, UserData,TemporaryUserRegistration
 from products.models import Order
-from .serializers import OTPRequestSerializer, OTPVerifySerializer,UserDataSerializer, PostViewSerializer, UserLoginSerializer, UserProfileSerializer, UserViewSerializer
+from .serializers import OTPVerifySerializer,UserDataSerializer, PostViewSerializer, UserLoginSerializer, UserProfileSerializer, UserViewSerializer
 from .utils import generate_otp
 from .tasks import send_mail_otp_task, send_sms_otp_task
 from django.contrib.auth.hashers import make_password
 from rest_framework.parsers import MultiPartParser
 import razorpay
+from razorpay.utility import Utility
 from django.conf import settings
 from django.http import JsonResponse
 from rest_framework.decorators import api_view
@@ -158,29 +160,47 @@ class CreateRazorPayPaymentPage(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+from razorpay.errors import SignatureVerificationError
 class VerifyPaymentView(APIView):
-    def post(self,request,*args, **kwargs):
-        razorpay_payment_id = request.data.get('razorpay_payment_id')
-        razorpay_order_id = request.data.get('razorpay_order_id')
-        razorpay_signature = request.data.get('razorpay_signature')
-        client = razorpay.Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+    def post(self, request, *args, **kwargs):
+        print("Request Data:", request.data)
+        print("Request Headers:", request.headers)
+        print("Request Body:", request.body)
+        razorpay_payment_id = request.data.get("razorpay_payment_id")
+        razorpay_order_id = request.data.get("razorpay_order_id")
+        razorpay_signature = request.data.get("razorpay_signature")
+        print("Payment ID:", razorpay_payment_id)
+        print("Order ID:", razorpay_order_id)
+        print("Signature:", razorpay_signature)
         try:
-            print("::::::::")
-            client.utility.verify_payment_signature({
+            # Initialize the Razorpay client with your credentials
+            client = Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
+
+            # Verify the payment signature
+            data = {
                 "razorpay_order_id": razorpay_order_id,
                 "razorpay_payment_id": razorpay_payment_id,
-                "razorpay_signature": razorpay_signature
-            })
-            print("::::::::")
-            
-            print(f"razorpay_order_id: {razorpay_order_id} \nrazorpay_payment_id: {razorpay_payment_id} \nrazorpay_signature: {razorpay_signature}")
+                "razorpay_signature": razorpay_signature,
+            }
+
+            # Razorpay signature verification
+            client.utility.verify_payment_signature(data)
+
+            # Update user payment status
             user_payment = UserPayment.objects.get(razorpay_order_id=razorpay_order_id)
             user_payment.is_paid = True
             user_payment.save()
+
             Order.objects.filter(user=user_payment.user, is_paid=False).update(is_paid=True, order_status="PAID")
+
             return Response({"message": "Payment verified and order completed."}, status=status.HTTP_200_OK)
-        except razorpay.errors.SignatureVerificationError as e:
+
+        except SignatureVerificationError:
             return Response({"error": "Payment verification failed."}, status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            print(f"Unexpected Error: {str(e)}")
+            return Response({"error": "An unexpected error occurred."}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 """                                            O R D E R                                                      """
         
