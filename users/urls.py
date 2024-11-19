@@ -24,5 +24,4 @@ urlpatterns = [
     path('verify/payment/', VerifyRazorPayPayment.as_view(), name='verify-payment'),
     path('cod/order/',CashOnDelivery.as_view(), name='cod-order'),
     
-    
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

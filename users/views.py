@@ -184,7 +184,6 @@ class VerifyRazorPayPayment(APIView):
             user_payment.payment_id = razorpay_payment_id
             user_payment.save()
 
-            # Mark the order as paid
             Order.objects.filter(user=user_payment.user, is_paid=False).update(is_paid=True)
 
             return Response({"success": "Payment verified and order updated."}, status=status.HTTP_200_OK)
