@@ -2,8 +2,8 @@ import os
 from celery import Celery
 from django.conf import settings
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'blogplatform.settings')
-app = Celery('blogplatform')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ecommerce_backend.settings')
+app = Celery('ecommerce_backend')
 app.config_from_object('django.conf.settings', namespace = 'CELERY')
 app.autodiscover_tasks()
 

@@ -6,7 +6,7 @@ import numpy as np
 from torch.utils.data import Dataset, DataLoader
 from model import NeuralNet
 
-with open('P:\\Kannur\\blogplatform\\chatbot\\intents.json', 'r')as f:
+with open('P:\\Kannur\\ecommerce_backend\\chatbot\\intents.json', 'r')as f:
     intents = json.load(f)
     all_words = []
     tags = []

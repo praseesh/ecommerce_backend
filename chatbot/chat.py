@@ -8,7 +8,7 @@ from model import NeuralNet
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 # Load intents and model data
-with open('P:\\Kannur\\blogplatform\\chatbot\\intents.json', 'r') as f:
+with open('P:\\Kannur\\ecommerce_backend\\chatbot\\intents.json', 'r') as f:
     intents = json.load(f)
 
 FILE = "data.path"  # Corrected typo from 'data.path' to 'data.pth'

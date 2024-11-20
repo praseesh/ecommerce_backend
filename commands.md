@@ -1,3 +1,3 @@
 # CELERY RabbitMQ server
 
-celery -A blogplatform worker -l info --pool=solo
+celery -A ecommerce_backend worker -l info --pool=solo
