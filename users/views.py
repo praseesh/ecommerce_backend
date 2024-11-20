@@ -3,7 +3,7 @@ from django.core.mail import send_mail
 from admin_panel.pagination import AdminUserPagination
 from products.models import Cart, Product
 from products.serializers import  OrderSerializer, ProductViewSerializer
-from .models import OTPVerification, Posts, UserPayment
+from .models import OTPVerification, UserPayment
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
 from django.contrib.auth import authenticate
@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework import status,generics
 from .models import OTPVerification, UserData,TemporaryUserRegistration
 from products.models import Order
-from .serializers import OTPVerifySerializer,UserDataSerializer, PostViewSerializer, UserLoginSerializer, UserProfileSerializer, UserViewSerializer
+from .serializers import OTPVerifySerializer,UserDataSerializer, UserLoginSerializer, UserProfileSerializer, UserViewSerializer
 from .utils import generate_otp
 from .tasks import send_mail_otp_task, send_sms_otp_task
 from django.contrib.auth.hashers import make_password

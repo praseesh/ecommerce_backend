@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Posts, UserData
+from .models import UserData
 from django.core.validators import validate_email
 from django.forms import ValidationError
 from django.contrib.auth.hashers import make_password, check_password
@@ -78,10 +78,6 @@ class OTPVerifySerializer(serializers.Serializer):
             raise serializers.ValidationError("Either email or phone number must be provided.")
         return data  
     
-class PostViewSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Posts
-        fields = '__all__'
         
 class UserViewSerializer(serializers.ModelSerializer):
     class Meta:
