@@ -73,17 +73,6 @@ class OTPVerification(models.Model):
         db_table = 'otp'
         ordering = ['-created_at']
         
-class Posts(models.Model):
-    title = models.CharField(max_length=40,null=False,blank=False)
-    content = models.TextField(max_length=1000, null=False,blank=False)
-    author = models.ForeignKey(UserData, on_delete=models.CASCADE)
-    created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(auto_now=True)
-
-    class Meta:
-        db_table = 'posts'
-        ordering = ['-created_at']
-
     def __str__(self):
         return self.title
 
