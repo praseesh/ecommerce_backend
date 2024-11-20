@@ -188,49 +188,7 @@ class VerifyRazorPayPayment(APIView):
         except Exception as e:
             return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
-class RazorPayWebhook(APIView):
-    def post(self, request, *args, **kwargs):
-        payload = request.body
-        signature = request.headers.get('X-Razorpay-Signature')
-        client = Client(auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET))
-        try:
-            client.utility.verify_webhook_signature(payload, signature, settings.RAZORPAY_WEBHOOK_SECRET)
-            event = json.loads(payload)
-            if event["event"] == "payment.captured":
-                pass
-            return Response({"success": "Webhook processed."}, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 """                                            O R D E R                                                      """
-        
-class CashOnDelivery(APIView):
-    def post(self,request,*args, **kwargs):
-        serializer = OrderSerializer(data=request.data)
-        if not serializer.is_valid():
-            return Response({"error": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
-        address_id = serializer.validated_data.get('address_id')
-        payment_method = serializer.validated_data.get('payment_method')
-        is_cart = serializer.validated_data.get('is_cart')
-        if is_cart:
-            
-            total_price = request.data.get('total_price')
-        user = request.user
-        if not total_price:
-            return Response({'error':'Total Price is Required'}, status=status.HTTP_400_BAD_REQUEST)
-        try:
-            order = Order.objects.create(
-                user = user,
-                total_price = total_price,
-                payment_method = 'cod',
-                is_paid = False
-            )
-            return Response({
-                'success':'Order placed Successfully',
-                'order_id': order.id,
-                "total_price": order.total_price,
-            },status=status.HTTP_201_CREATED)
-        except Exception as e:
-            return Response({'error':str(e)},status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
         
 class OrderCreateView(APIView):
