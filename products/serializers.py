@@ -3,7 +3,6 @@ from rest_framework.exceptions import ValidationError
 from users.models import Address
 from .models import Cart, Payment, Product, Category, Order
 
-
 class ProductCreationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
@@ -97,8 +96,7 @@ class ProductUpdationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("A product cannot be related to itself.")
         return value
     
-"""                                             C A R T                                                         """
-
+#                                             C A R T                                                         
 class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
