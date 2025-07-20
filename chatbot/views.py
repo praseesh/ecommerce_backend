@@ -1,4 +1,5 @@
 from django.shortcuts import HttpResponse
+
 from django.core.cache import cache
 
 def cache_set_get_method(request):
