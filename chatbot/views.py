@@ -12,6 +12,7 @@ def cache_set_get_method(request):
 
 
 
+
     print(f'Apple: {value}')
 
     print(f'Mango: {mangos}')
