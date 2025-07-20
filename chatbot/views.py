@@ -9,6 +9,7 @@ def cache_set_get_method(request):
     cache.set('mango', 50, timeout=60)
     value = cache.get('orange') 
     mangos = cache.get('mango') 
+
     print(f'Apple: {value}')
 
     print(f'Mango: {mangos}')
