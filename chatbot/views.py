@@ -9,6 +9,4 @@ def cache_set_get_method(request):
     print(f'Apple: {value}')
     print(f'Mango: {mangos}')
 
-    # cache.delete('orange')
-
     return HttpResponse(f'apple value: {value}\nmango value: {mangos}')
