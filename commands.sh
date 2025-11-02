@@ -5,4 +5,3 @@ VALUES
 ('Fitness Tracker', 'Track your fitness levels with this compact wearable', 'Fitbit', 4999.99, 0.0, 0, 0, 100, NOW(), NOW(), 2),
 ('Casual Shoes', 'Comfortable casual shoes suitable for everyday wear', 'Nike', 2999.99, 0.0, 0, 0, 75, NOW(), NOW(), 4),
 ('Air Conditioner', 'Energy-efficient air conditioner with fast cooling', 'LG', 35999.99, 0.0, 0, 0, 20, NOW(), NOW(), 5),
-('Bookshelf', 'Modern bookshelf with multiple compartments', 'Ikea', 6999.99, 0.0, 0, 0, 30, NOW(), NOW(), 6);
